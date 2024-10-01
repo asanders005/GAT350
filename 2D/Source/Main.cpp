@@ -35,6 +35,6 @@ int main(int argc, char* argv[])
 		// show screen
 		SDL_RenderPresent(renderer);
 	}
-
+	//f
 	return 0;
 }

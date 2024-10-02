@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Framebuffer.h"
 #include <iostream>
 
 bool Renderer::Initialize()
@@ -17,9 +18,12 @@ bool Renderer::CreateWindow(std::string name, int width, int height)
 {
 	// create window
 	// returns pointer to window if successful or nullptr if failed
+	m_width = width;
+	m_height = height;
+
 	m_window = SDL_CreateWindow(name.c_str(),
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		width, height,
+		m_width, m_height,
 		SDL_WINDOW_SHOWN);
 	if (m_window == nullptr)
 	{
@@ -45,4 +49,14 @@ void Renderer::EndFrame()
 {
 	// show screen
 	SDL_RenderPresent(m_renderer);
+}
+
+void Renderer::CopyFramebuffer(const Framebuffer& framebuffer)
+{
+	SDL_RenderCopy(m_renderer, framebuffer.m_texture, NULL, NULL);
+}
+
+void Renderer::operator = (const Framebuffer& framebuffer)
+{
+	SDL_RenderCopy(m_renderer, framebuffer.m_texture, NULL, NULL);
 }

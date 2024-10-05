@@ -32,19 +32,22 @@ int main(int argc, char* argv[])
 
 		framebuffer->Clear({ 0, 0, 0, 255 });
 
-		for (int i = 0; i < 100; i++)
-		{
-			int x = rand() % 400;
-			int y = rand() % 300;
-			int x2 = rand() % 400;
-			int y2 = rand() % 300;
+		//for (int i = 0; i < 100; i++)
+		//{
+		//	int x = rand() % 400;
+		//	int y = rand() % 300;
+		//	int x2 = rand() % 400;
+		//	int y2 = rand() % 300;
 
-			//framebuffer->drawpoint(x, y, { 180, 0, 255, 255 });
-			framebuffer->DrawLine(x, y, x2, y2, { 0, 255, 25, 255 });
-		}	
+		//	//framebuffer->drawpoint(x, y, { 180, 0, 255, 255 });
+		//	framebuffer->DrawLine(x, y, x2, y2, { 0, 255, 25, 255 });
+		//}	
 
-		framebuffer->DrawRect(-20, -20, 100, 100, { 0, 255, 180 });
-		framebuffer->DrawTriangle(200, 50, 100, 250, 375, 110, { 255, 120, 0 });
+		framebuffer->DrawLine(-80, 150, 60, -50, { 0, 255, 25, 255 });
+		framebuffer->DrawLine(80, 150, 40, 275, { 0, 255, 25, 255 });
+		framebuffer->DrawRect(20, 20, 100, 100, { 0, 255, 180 });
+		framebuffer->DrawTriangle(200, 50, 50, 295, 375, 110, { 255, 120, 0 });
+		framebuffer->DrawCircle(225, 125, 50, { 0, 0, 255 });
 
 		framebuffer->Update();
 

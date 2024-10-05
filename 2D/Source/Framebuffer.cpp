@@ -34,8 +34,8 @@ void Framebuffer::Clear(const color_t& color)
 
 void Framebuffer::DrawPoint(int x, int y, const color_t& color)
 {
-	x = (x < 0) ? 0 : (x >= m_width) ? m_width : x;
-	y = (y < 0) ? 0 : (y >= m_height) ? m_height : y;
+	//x = (x < 0) ? 0 : (x >= m_width) ? m_width : x;
+	//y = (y < 0) ? 0 : (y >= m_height) ? m_height : y;
 
 	m_buffer[x + (y * m_width)] = color;
 }
@@ -69,18 +69,88 @@ void Framebuffer::DrawLine(int x1, int y1, int x2, int y2, const color_t& color)
 	int error = dx / 2;
 	int ystep = (y1 < y2) ? 1 : -1;
 
-	// draw line points
-	for (int x = x1, y = y1; x <= x2; x++)
+	// clip line
+	int code1 = ComputeRegionCode(x1, y1);
+	int code2 = ComputeRegionCode(x2, y2);
+	bool valid = false;
+
+	while (true)
 	{
-		(steep) ? DrawPoint(y, x, color) : DrawPoint(x, y, color);
-		error -= dy;
-
-		// update error term
-
-		if (error < 0)
+		if (code1 == 0 && code2 == 0)
 		{
-			y += ystep;
-			error += dx;
+			// Both endpoints are inside the boundary
+			valid = true;
+			break;
+		}
+		else if (code1 & code2)
+		{
+			// Both endpoints are outside the same boundary
+			break;
+		}
+		else
+		{
+			// At least one endpoint is outside the boundary
+			int codeOut = 0;
+			int x{ 0 }, y{ 0 };
+
+			// Use region code to choose endpoint to clip
+			if (code1 != 0) codeOut = code1; // start point is outside
+			else codeOut = code2; // end point is outside
+
+			// Find intersection point;
+			// will be different for each boundary
+			if (codeOut & TOP)
+			{
+				x = x1 + (x2 - x1) * (0 - y1) / (y2 - y1);
+				y = 0;
+			}
+			else if (codeOut & BOTTOM)
+			{
+				x = x1 + (x2 - x1) * (m_height - y1) / (y2 - y1);
+				y = m_height - 1;
+			}
+			else if (codeOut & LEFT)
+			{
+				y = y1 + (y2 - y1) * (0 - x1) / (x2 - x1);
+				x = 0;
+			}
+			else if (codeOut & RIGHT)
+			{
+				y = y1 + (y2 - y1) * (m_width - x1) / (x2 - x1);
+				x = m_width - 1;
+			}
+
+			// Move outside point to intersection point
+			if (codeOut == code1)
+			{
+				x1 = x;
+				y1 = y;
+				code1 = ComputeRegionCode(x1, y1);
+			}
+			else 
+			{
+				x2 = x;
+				y2 = y;
+				code2 = ComputeRegionCode(x2, y2);
+			}
+		}
+	}
+
+	// draw line points
+	if (valid)
+	{
+		for (int x = x1, y = y1; x <= x2; x++)
+		{
+			(steep) ? DrawPoint(y, x, color) : DrawPoint(x, y, color);
+			error -= dy;
+
+			// update error term
+
+			if (error < 0)
+			{
+				y += ystep;
+				error += dx;
+			}
 		}
 	}
 }
@@ -150,4 +220,55 @@ void Framebuffer::DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, c
 	DrawLine(x1, y1, x2, y2, color);
 	DrawLine(x2, y2, x3, y3, color);
 	DrawLine(x3, y3, x1, y1, color);
+}
+
+void Framebuffer::DrawCircle(int xc, int yc, int r, const color_t& color)
+{
+	int x = 0, y = r;
+	int d = 3 - (2 * r);
+
+	DrawOctant(xc, yc, x, y, color);
+
+	while (y >= x)
+	{
+		// check for decision parameter and update d, y accordingly
+		if (d > 0)
+		{
+			y--;
+			d +=  4 * (x - y) + 10;
+		}
+		else d += (4 * x) + 6;
+
+		// increment x after updating decision parameter
+		x++;
+
+		// Clip Circle
+		if (x < 0 || x >= m_width || y < 0 || y >= m_height) continue;
+		// Draw circle using new coordinates
+		DrawOctant(xc, yc, x, y, color);
+	}
+}
+
+void Framebuffer::DrawOctant(int xc, int yc, int x, int y, const color_t& color)
+{
+	DrawPoint(xc + x, yc + y, color);
+	DrawPoint(xc - x, yc + y, color);
+	DrawPoint(xc + x, yc - y, color);
+	DrawPoint(xc - x, yc - y, color);
+	DrawPoint(xc + y, yc + x, color);
+	DrawPoint(xc - y, yc + x, color);
+	DrawPoint(xc + y, yc - x, color);
+	DrawPoint(xc - y, yc - x, color);
+}
+
+int Framebuffer::ComputeRegionCode(int x, int y)
+{
+	int code = INSIDE;
+
+	if (x < 0) code |= LEFT;
+	else if (x >= m_width) code |= RIGHT;
+	if (y < 0) code |= TOP;
+	else if (y >= m_height) code |= BOTTOM;
+
+	return code;
 }

@@ -21,12 +21,17 @@ public:
 	void DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, const color_t& color);
 	void DrawCircle(int xc, int yc, int r, const color_t& color);
 
+	void DrawLinearCurve(int x1, int y1, int x2, int y2, const color_t& color);
+	void DrawQuadraticCurve(int x1, int y1, int x2, int y2, int x3, int y3, int steps, const color_t& color);
+	void DrawCubicCurve(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int steps, const color_t& color);
+
 	friend class Renderer;
 
 private:
 	void DrawOctant(int xc, int yc, int x, int y, const color_t& color);
 
 	int ComputeRegionCode(int x, int y);
+	void ClipLine(int& x1, int& y1, int& x2, int& y2);
 
 private:
 	int m_width{ 0 };
@@ -35,9 +40,9 @@ private:
 
 	// Region Codes
 	const int INSIDE = 0; // 0000
-	const int LEFT = 1; // 0000
-	const int RIGHT = 2; // 0000
-	const int BOTTOM = 4; // 0000
+	const int LEFT = 1; // 0001
+	const int RIGHT = 2; // 0010
+	const int BOTTOM = 4; // 0100
 	const int TOP = 8; // 1000
 
 	SDL_Texture* m_texture{ nullptr };

@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Framebuffer.h"
+#include "MathUtils.h"
 
 #include <iostream>
 #include <memory>
@@ -43,11 +44,25 @@ int main(int argc, char* argv[])
 		//	framebuffer->DrawLine(x, y, x2, y2, { 0, 255, 25, 255 });
 		//}	
 
-		framebuffer->DrawLine(-80, 150, 60, -50, { 0, 255, 25, 255 });
+		int mx, my;
+		SDL_GetMouseState(&mx, &my);
+
+		framebuffer->DrawLinearCurve(50, 50, 100, 100, { 255, 255, 255, 255 });
+		//framebuffer->DrawQuadraticCurve(100, 50, 200, 100, mx, my, 10, { 255, 255, 255, 255 });
+		framebuffer->DrawCubicCurve(200, 100, 250, 200, mx, my, 300, 50, 50, { 255, 255, 255, 255 });
+
+		int ticks = SDL_GetTicks();
+		float time = ticks * 0.001f;
+		float t = std::abs(std::sin(time));
+		int x, y;
+		Math::CubicPoint(200, 100, 250, 200, mx, my, 300, 50, t, x, y);
+		framebuffer->DrawRect(x - 20, y - 20, 40, 40, { 180, 0, 255, 255 });
+
+		/*framebuffer->DrawLine(-80, 5, 600, 40, { 0, 255, 25, 255 });
 		framebuffer->DrawLine(80, 150, 40, 275, { 0, 255, 25, 255 });
 		framebuffer->DrawRect(20, 20, 100, 100, { 0, 255, 180 });
 		framebuffer->DrawTriangle(200, 50, 50, 295, 375, 110, { 255, 120, 0 });
-		framebuffer->DrawCircle(225, 125, 50, { 0, 0, 255 });
+		framebuffer->DrawCircle(225, 125, 50, { 0, 0, 255 });*/
 
 		framebuffer->Update();
 

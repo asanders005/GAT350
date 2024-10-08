@@ -1,6 +1,7 @@
 #include "Framebuffer.h"
 #include "Renderer.h"
 #include "MathUtils.h"
+#include "Image.h"
 
 #include <iostream>
 
@@ -238,6 +239,28 @@ void Framebuffer::DrawCubicCurve(int x1, int y1, int x2, int y2, int x3, int y3,
 		t1 += dt;
 
 		DrawLine(sx1, sy1, sx2, sy2, color);
+	}
+}
+
+void Framebuffer::DrawImage(int x, int y, const Image& image)
+{
+	if (x + image.m_width < 0 || x >= m_width || y + image.m_height < 0 || y >= m_height) return;
+
+	for (int iy = 0; iy < image.m_height; iy++)
+	{
+		int sy = y + iy;
+		if (sy < 0 || sy >= m_height) continue;
+
+		for (int ix = 0; ix < image.m_width; ix++)
+		{
+			int sx = x + ix;
+			if (sx < 0 || sx >= m_width) continue;
+
+			color_t color = image.m_buffer[ix + (iy * image.m_width)];
+			if (color.a == 0) continue;
+
+			m_buffer[sx + (sy * m_width)] = color;
+		}
 	}
 }
 

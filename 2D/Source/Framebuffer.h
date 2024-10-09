@@ -35,6 +35,10 @@ private:
 	int ComputeRegionCode(int x, int y);
 	void ClipLine(int& x1, int& y1, int& x2, int& y2);
 
+public:
+	SDL_Texture* m_texture{ nullptr };
+	std::vector<color_t> m_buffer;
+
 private:
 	int m_width{ 0 };
 	int m_height{ 0 };
@@ -46,7 +50,4 @@ private:
 	const int RIGHT = 2; // 0010
 	const int BOTTOM = 4; // 0100
 	const int TOP = 8; // 1000
-
-	SDL_Texture* m_texture{ nullptr };
-	std::vector<color_t> m_buffer;
 };

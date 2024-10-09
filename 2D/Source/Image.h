@@ -1,9 +1,6 @@
 #pragma once
+#include "Framebuffer.h"
 #include <string>
-#include <vector>
-#include <SDL.h>
-
-using color_t = SDL_Color;
 
 class Image
 {

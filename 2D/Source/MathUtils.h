@@ -3,7 +3,18 @@
 namespace Math
 {
 	template<typename T>
-	inline T Lerp(T a, T b, float t)
+	inline T Clamp(const T& value, const T& min, const T& max)
+	{
+		return (value < min) ? min : (value > max) ? max : value;
+	}
+
+	inline int Random(int min, int max)
+	{
+		return (std::rand() % (max - min)) + min;
+	}
+
+	template<typename T>
+	inline T Lerp(const T& a, const T& b, float t)
 	{
 		return static_cast<T>(a + (t * (b - a)));
 	}

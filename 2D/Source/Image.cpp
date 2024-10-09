@@ -15,7 +15,7 @@ bool Image::Load(const std::string& filename)
 
 	m_buffer.resize(m_width * m_height);
 
-	std::memcpy(m_buffer.data(), data, m_width * m_height * 4);
+	std::memcpy(m_buffer.data(), data, m_width * m_height * sizeof(color_t));
 
 	stbi_image_free(data);
 

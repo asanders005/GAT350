@@ -2,6 +2,7 @@
 #include "Framebuffer.h"
 #include "MathUtils.h"
 #include "Image.h"
+#include "PostProcess.h"
 
 #include <iostream>
 #include <memory>
@@ -14,8 +15,12 @@ int main(int argc, char* argv[])
 
 	std::unique_ptr<Framebuffer> framebuffer = std::make_unique<Framebuffer>(*renderer.get(), 800, 600);
 
-	Image image;
-	image.Load("image.png");
+	Image scenery;
+	scenery.Load("Scenery.jpg");
+	Image eevee;
+	eevee.Load("Eevee.png");
+	Image pokeball;
+	pokeball.Load("image.png");
 
 	bool quit = false;
 	while (!quit)
@@ -37,17 +42,20 @@ int main(int argc, char* argv[])
 
 		framebuffer->Clear({ 0, 0, 0, 255 });
 
-		for (int i = 0; i < 10; i++)
-		{
-			int x = rand() % 1000 - 100;
-			int y = rand() % 800 - 100;
-			/*int x2 = rand() % 400;
-			int y2 = rand() % 300;*/
+		framebuffer->DrawImage(-10, -10, scenery);
+		framebuffer->DrawImage(100, 10, eevee);
 
-			//framebuffer->drawpoint(x, y, { 180, 0, 255, 255 });
-			//framebuffer->DrawLine(x, y, x2, y2, { 0, 255, 25, 255 });
-			framebuffer->DrawImage(x, y, image);
-		}	
+		//for (int i = 0; i < 3; i++)
+		//{
+		//	int x = rand() % 1000 - 100;
+		//	int y = rand() % 800 - 100;
+		//	/*int x2 = rand() % 400;
+		//	int y2 = rand() % 300;*/
+
+		//	//framebuffer->drawpoint(x, y, { 180, 0, 255, 255 });
+		//	//framebuffer->DrawLine(x, y, x2, y2, { 0, 255, 25, 255 });
+		//	framebuffer->DrawImage(x, y, pokeball);
+		//}	
 
 		//int mx, my;
 		//SDL_GetMouseState(&mx, &my);
@@ -69,6 +77,12 @@ int main(int argc, char* argv[])
 		framebuffer->DrawTriangle(200, 50, 50, 295, 375, 110, { 255, 120, 0 });
 		framebuffer->DrawCircle(225, 125, 50, { 0, 0, 255 });*/
 
+		//Post::Invert(framebuffer->m_buffer);
+		//Post::Monochrome(framebuffer->m_buffer);
+		//Post::ColorBalance(framebuffer->m_buffer, 30, -20, 50);
+		//Post::Brightness(framebuffer->m_buffer, -40);
+		Post::Noise(framebuffer->m_buffer, 50);
+		//Post::Threshold(framebuffer->m_buffer, 125);
 		framebuffer->Update();
 
 		renderer->CopyFramebuffer(*framebuffer.get());

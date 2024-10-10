@@ -39,11 +39,11 @@ public:
 	SDL_Texture* m_texture{ nullptr };
 	std::vector<color_t> m_buffer;
 
-private:
 	int m_width{ 0 };
 	int m_height{ 0 };
 	int m_pitch{ 0 };
 
+private:
 	// Region Codes
 	const int INSIDE = 0; // 0000
 	const int LEFT = 1; // 0001

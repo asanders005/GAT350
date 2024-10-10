@@ -79,10 +79,12 @@ int main(int argc, char* argv[])
 
 		//Post::Invert(framebuffer->m_buffer);
 		//Post::Monochrome(framebuffer->m_buffer);
-		//Post::ColorBalance(framebuffer->m_buffer, 30, -20, 50);
-		//Post::Brightness(framebuffer->m_buffer, -40);
-		Post::Noise(framebuffer->m_buffer, 50);
+		Post::ColorBalance(framebuffer->m_buffer, 12, -7, 12);
+		//Post::Brightness(framebuffer->m_buffer, 40);
+		//Post::Noise(framebuffer->m_buffer, 100);
 		//Post::Threshold(framebuffer->m_buffer, 125);
+		Post::Posterize(framebuffer->m_buffer, 8);
+
 		framebuffer->Update();
 
 		renderer->CopyFramebuffer(*framebuffer.get());

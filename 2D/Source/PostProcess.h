@@ -9,4 +9,5 @@ namespace Post
 	void Brightness(std::vector<color_t>& buffer, int brightness);
 	void Noise(std::vector<color_t>& buffer, uint8_t noise);
 	void Threshold(std::vector<color_t>& buffer, uint8_t threshold);
+	void Posterize(std::vector<color_t>& buffer, uint8_t levels);
 }

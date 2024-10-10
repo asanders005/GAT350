@@ -83,4 +83,15 @@ namespace Post
 				}
 			});
 	}
+    void Posterize(std::vector<color_t>& buffer, uint8_t levels)
+    {
+		uint8_t level = 255 / levels;
+
+		std::for_each(buffer.begin(), buffer.end(), [level](auto& color)
+			{
+				color.r = (color.r / level) * level;
+				color.g = (color.g / level) * level;
+				color.b = (color.b / level) * level;
+			});
+    }
 }

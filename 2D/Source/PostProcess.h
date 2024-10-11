@@ -15,4 +15,5 @@ namespace Post
 	void GaussianBlur(std::vector<color_t>& buffer, int width, int height);
 	void Sharpen(std::vector<color_t>& buffer, int width, int height);
 	void Edge(std::vector<color_t>& buffer, int width, int height, int threshold);
+	void Emboss(std::vector<color_t>& buffer, int width, int height);
 }

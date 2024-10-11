@@ -78,19 +78,21 @@ int main(int argc, char* argv[])
 		framebuffer->DrawCircle(225, 125, 50, { 0, 0, 255 });*/
 
 		//Post::Invert(framebuffer->m_buffer);
+		//Post::Monochrome(framebuffer->m_buffer);
 		//Post::Brightness(framebuffer->m_buffer, 40);
 		//Post::Noise(framebuffer->m_buffer, 100);
 		//Post::Threshold(framebuffer->m_buffer, 125);
 
 		//Post::BoxBlur(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height);
 		//Post::Sharpen(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height);
-		
-		//Post::Monochrome(framebuffer->m_buffer);
 		//Post::Edge(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height, 120);
+		//Post::Emboss(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height);
+		
 
 		Post::ColorBalance(framebuffer->m_buffer, 12, -7, 12);
 		Post::GaussianBlur(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height);
 		Post::Posterize(framebuffer->m_buffer, 8);
+
 
 		framebuffer->Update();
 

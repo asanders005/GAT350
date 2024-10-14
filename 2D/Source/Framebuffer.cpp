@@ -37,10 +37,17 @@ void Framebuffer::Clear(const color_t& color)
 
 void Framebuffer::DrawPoint(int x, int y, const color_t& color)
 {
-	//x = (x < 0) ? 0 : (x >= m_width) ? m_width : x;
-	//y = (y < 0) ? 0 : (y >= m_height) ? m_height : y;
+	color_t& dest = m_buffer[x + y * m_width];
 
-	if (x + (y * m_width) < m_buffer.size()) m_buffer[x + (y * m_width)] = color;
+	if (x + (y * m_width) < m_buffer.size()) m_buffer[x + (y * m_width)] = Color::ColorBlend(color, dest);
+}
+
+void Framebuffer::DrawPointClip(int x, int y, const color_t& color)
+{
+	if (x < 0 || x >= m_width || y < 0 || y >= m_height) return;
+	color_t& dest = m_buffer[x + y * m_width];
+
+	if (x + (y * m_width) < m_buffer.size()) dest = color;
 }
 
 void Framebuffer::DrawLine(int x1, int y1, int x2, int y2, const color_t& color)
@@ -248,18 +255,20 @@ void Framebuffer::DrawImage(int x, int y, const Image& image)
 
 	for (int iy = 0; iy < image.m_height; iy++)
 	{
-		int sy = y + iy;
+		int sy = y + iy - (image.m_height / 2);
 		if (sy < 0 || sy >= m_height) continue;
 
 		for (int ix = 0; ix < image.m_width; ix++)
 		{
-			int sx = x + ix;
+			int sx = x + ix - (image.m_width / 2);
 			if (sx < 0 || sx >= m_width) continue;
 
 			color_t color = image.m_buffer[ix + (iy * image.m_width)];
-			if (color.a == 0) continue;
+			//if (color.a == 0) continue;
 
-			m_buffer[sx + (sy * m_width)] = color;
+			DrawPoint(sx, sy, color);
+
+			//m_buffer[sx + (sy * m_width)] = color;
 		}
 	}
 }

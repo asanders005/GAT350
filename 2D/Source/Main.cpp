@@ -17,10 +17,16 @@ int main(int argc, char* argv[])
 
 	Image scenery;
 	scenery.Load("Scenery.jpg");
+
 	Image eevee;
 	eevee.Load("Eevee.png");
+
 	Image pokeball;
 	pokeball.Load("image.png");
+
+	Image imageAlpha;
+	imageAlpha.Load("colors.png");
+	Post::Alpha(imageAlpha.m_buffer, 64);
 
 	bool quit = false;
 	while (!quit)
@@ -38,12 +44,18 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		renderer->BeginFrame();
+		//renderer->BeginFrame();
 
 		framebuffer->Clear({ 0, 0, 0, 255 });
 
-		framebuffer->DrawImage(-10, -10, scenery);
-		framebuffer->DrawImage(100, 10, eevee);
+		int mx, my;
+		SDL_GetMouseState(&mx, &my);
+
+		Color::SetBlendMode(BlendMode::NORMAL);
+		framebuffer->DrawImage(450, 500, scenery);
+		Color::SetBlendMode(BlendMode::ALPHA);
+		framebuffer->DrawImage(360, 250, eevee);
+		framebuffer->DrawImage(mx, my, imageAlpha);
 
 		//for (int i = 0; i < 3; i++)
 		//{
@@ -56,9 +68,6 @@ int main(int argc, char* argv[])
 		//	//framebuffer->DrawLine(x, y, x2, y2, { 0, 255, 25, 255 });
 		//	framebuffer->DrawImage(x, y, pokeball);
 		//}	
-
-		//int mx, my;
-		//SDL_GetMouseState(&mx, &my);
 
 		//framebuffer->DrawLinearCurve(50, 50, 100, 100, { 255, 255, 255, 255 });
 		////framebuffer->DrawQuadraticCurve(100, 50, 200, 100, mx, my, 10, { 255, 255, 255, 255 });
@@ -77,6 +86,7 @@ int main(int argc, char* argv[])
 		framebuffer->DrawTriangle(200, 50, 50, 295, 375, 110, { 255, 120, 0 });
 		framebuffer->DrawCircle(225, 125, 50, { 0, 0, 255 });*/
 
+#pragma region postProcess
 		//Post::Invert(framebuffer->m_buffer);
 		//Post::Monochrome(framebuffer->m_buffer);
 		//Post::Brightness(framebuffer->m_buffer, 40);
@@ -87,11 +97,14 @@ int main(int argc, char* argv[])
 		//Post::Sharpen(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height);
 		//Post::Edge(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height, 120);
 		//Post::Emboss(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height);
+		//Post::EmbossColor(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height);
 		
 
-		Post::ColorBalance(framebuffer->m_buffer, 12, -7, 12);
+		/*Post::ColorBalance(framebuffer->m_buffer, 12, -7, 12);
 		Post::GaussianBlur(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height);
-		Post::Posterize(framebuffer->m_buffer, 8);
+		Post::Posterize(framebuffer->m_buffer, 8);*/
+
+#pragma endregion
 
 
 		framebuffer->Update();

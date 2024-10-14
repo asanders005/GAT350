@@ -97,6 +97,14 @@ namespace Post
 			});
     }
 
+	void Alpha(std::vector<color_t>& buffer, uint8_t alpha)
+	{
+		std::for_each(buffer.begin(), buffer.end(), [alpha](auto& color)
+			{
+				color.a = alpha;
+			});
+	}
+
     void BoxBlur(std::vector<color_t>& buffer, int width, int height)
     {
 		std::vector<color_t> source = buffer;
@@ -309,4 +317,45 @@ namespace Post
 			color.b = static_cast<uint8_t>(Math::Clamp(sum, 0, 255));
 		}
     }
+
+	void EmbossColor(std::vector<color_t>& buffer, int width, int height)
+	{
+		std::vector<color_t> source = buffer;
+
+		int k[3][3] =
+		{
+			{ -2, -1,  0 },
+			{ -1,  1,  1 },
+			{  0,  1,  2 }
+		};
+
+
+		for (int i = 0; i < buffer.size(); i++)
+		{
+			int x = i % width;
+			int y = i / width;
+
+			if (x < 1 || x + 1 >= width || y < 1 || y + 1 >= height) continue;
+
+			int r{ 0 }, g{ 0 }, b{ 0 };
+			int sumR{ 0 }, sumG{ 0 }, sumB{ 0 };
+
+			for (int iy = 0; iy < 3; iy++)
+			{
+				for (int ix = 0; ix < 3; ix++)
+				{
+					color_t pixel = source[(x + ix - 1) + ((y + iy - 1) * width)];
+					sumR += pixel.r * k[iy][ix];
+					sumG += pixel.g * k[iy][ix];
+					sumB += pixel.b * k[iy][ix];
+				}
+			}
+
+			color_t& color = buffer[i];
+
+			color.r = static_cast<uint8_t>(Math::Clamp(sumR, 0, 255));
+			color.g = static_cast<uint8_t>(Math::Clamp(sumG, 0, 255));
+			color.b = static_cast<uint8_t>(Math::Clamp(sumB, 0, 255));
+		}
+	}
 }

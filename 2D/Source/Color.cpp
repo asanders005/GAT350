@@ -1,4 +1,5 @@
 #include "Color.h"
+#include <cassert>
 
 namespace Color
 {
@@ -27,6 +28,8 @@ namespace Color
 
 	color_t ColorBlend(const color_t& src, const color_t& dst)
 	{
+		assert(blend_func);
+
 		return blend_func(src, dst);
 	}
 
@@ -64,9 +67,9 @@ namespace Color
 	{
 		color_t color;
 
-		color.r = src.r * dst.r >> 8;
-		color.g = src.g * dst.g >> 8;
-		color.b = src.b * dst.b >> 8;
+		color.r = (src.r * dst.r) >> 8;
+		color.g = (src.g * dst.g) >> 8;
+		color.b = (src.b * dst.b) >> 8;
 		color.a = src.a;
 
 		return color;

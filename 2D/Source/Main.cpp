@@ -3,11 +3,12 @@
 #include "MathUtils.h"
 #include "Image.h"
 #include "PostProcess.h"
+#include "Model.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <memory>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -30,9 +31,10 @@ int main(int argc, char* argv[])
 	imageAlpha.Load("colors.png");
 	Post::Alpha(imageAlpha.m_buffer, 64);
 
-	// Test GLM
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(1.0f, 0.0f, 0.0f));
+	Color::SetBlendMode(BlendMode::NORMAL);
+
+	vertices_t vertices{ {-5, -5, 0}, {5, 5, 0}, {-5, 5, 0} };
+	Model model(vertices, {128, 28, 255, 255});
 
 	bool quit = false;
 	while (!quit)
@@ -57,15 +59,19 @@ int main(int argc, char* argv[])
 		int mx, my;
 		SDL_GetMouseState(&mx, &my);
 
-		Color::SetBlendMode(BlendMode::NORMAL);
+#pragma region Images
+		/*Color::SetBlendMode(BlendMode::NORMAL);
 		framebuffer->DrawImage(450, 500, scenery);
 		Color::SetBlendMode(BlendMode::ALPHA);
-		framebuffer->DrawImage(360, 250, eevee);
-		Color::SetBlendMode(BlendMode::ADDITIVE);
-		framebuffer->DrawImage(mx, my, pokeball);
-		Color::SetBlendMode(BlendMode::MULTIPLY);
-		framebuffer->DrawRect(10, 390, 200, 200, { 180, 25, 255, 128 });
+		framebuffer->DrawImage(360, 250, eevee);*/
+		//Color::SetBlendMode(BlendMode::ADDITIVE);
+		//framebuffer->DrawImage(mx, my, pokeball);
+		//Color::SetBlendMode(BlendMode::MULTIPLY);
+		//framebuffer->DrawRect(10, 390, 200, 200, { 180, 25, 255, 128 });
 
+#pragma endregion
+
+#pragma region Primitives
 		//for (int i = 0; i < 3; i++)
 		//{
 		//	int x = rand() % 1000 - 100;
@@ -82,9 +88,6 @@ int main(int argc, char* argv[])
 		////framebuffer->DrawQuadraticCurve(100, 50, 200, 100, mx, my, 10, { 255, 255, 255, 255 });
 		//framebuffer->DrawCubicCurve(200, 100, 250, 200, mx, my, 300, 50, 50, { 255, 255, 255, 255 });
 
-		//int ticks = SDL_GetTicks();
-		//float time = ticks * 0.001f;
-		//float t = std::abs(std::sin(time));
 		//int x, y;
 		//Math::CubicPoint(200, 100, 250, 200, mx, my, 300, 50, t, x, y);
 		//framebuffer->DrawRect(x - 20, y - 20, 40, 40, { 180, 0, 255, 255 });
@@ -94,6 +97,8 @@ int main(int argc, char* argv[])
 		framebuffer->DrawRect(20, 20, 100, 100, { 0, 255, 180 });
 		framebuffer->DrawTriangle(200, 50, 50, 295, 375, 110, { 255, 120, 0 });
 		framebuffer->DrawCircle(225, 125, 50, { 0, 0, 255 });*/
+
+#pragma endregion
 
 #pragma region postProcess
 		//Post::Invert(framebuffer->m_buffer);
@@ -109,12 +114,22 @@ int main(int argc, char* argv[])
 		//Post::EmbossColor(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height);
 		
 
-		/*Post::ColorBalance(framebuffer->m_buffer, 12, -7, 12);
+		Post::ColorBalance(framebuffer->m_buffer, 12, -7, 12);
 		Post::GaussianBlur(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height);
-		Post::Posterize(framebuffer->m_buffer, 8);*/
+		Post::Posterize(framebuffer->m_buffer, 8);
 
 #pragma endregion
+		
+		int ticks = SDL_GetTicks();
+		float time = ticks * 0.001f;
+		float t = std::abs(std::sin(time));
+		glm::mat4 modelMatrix = glm::mat4(1.0f);
+		glm::mat4 translate = glm::translate(modelMatrix, glm::vec3(mx, my, 0.0f));
+		glm::mat4 scale = glm::scale(modelMatrix, glm::vec3(5));
+		glm::mat4 rotate = glm::rotate(glm::identity<glm::mat4>(), glm::radians(time * 90), glm::vec3(1, 1, 1));
+		modelMatrix = translate * scale * rotate;
 
+		model.Draw(*framebuffer.get(), modelMatrix);
 
 		framebuffer->Update();
 

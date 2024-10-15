@@ -4,6 +4,8 @@
 #include "Image.h"
 #include "PostProcess.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <memory>
 
@@ -27,6 +29,10 @@ int main(int argc, char* argv[])
 	Image imageAlpha;
 	imageAlpha.Load("colors.png");
 	Post::Alpha(imageAlpha.m_buffer, 64);
+
+	// Test GLM
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(1.0f, 0.0f, 0.0f));
 
 	bool quit = false;
 	while (!quit)

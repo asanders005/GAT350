@@ -149,11 +149,11 @@ void Framebuffer::DrawRect(int x, int y, int w, int h, const color_t& color)
 	for (int sy = y1; sy < y2; sy++)
 	{
 		int index = x1 + (sy * m_width);
-		std::fill(m_buffer.begin() + index, m_buffer.begin() + (index + x2 - x1), color);
-		//for (int sx = x1; sx < x2; sx++)
-		//{
-		//	//m_buffer[sx + (sy * m_width)] = color;
-		//}
+		//std::fill(m_buffer.begin() + index, m_buffer.begin() + (index + x2 - x1), color);
+		for (int sx = x1; sx < x2; sx++)
+		{
+			DrawPoint(sx, sy, color);
+		}
 	}
 }
 

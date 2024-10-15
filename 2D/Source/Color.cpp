@@ -18,7 +18,7 @@ namespace Color
 			blend_func = AdditiveBlend;
 			break;
 		case BlendMode::MULTIPLY:
-			//blend_func = MultiplyBlend;
+			blend_func = MultiplyBlend;
 			break;
 		default:
 			break;
@@ -55,6 +55,18 @@ namespace Color
 		color.r = std::min(src.r + dst.r, 255);
 		color.g = std::min(src.g + dst.g, 255);
 		color.b = std::min(src.b + dst.b, 255);
+		color.a = src.a;
+
+		return color;
+	}
+
+	color_t MultiplyBlend(const color_t& src, const color_t& dst)
+	{
+		color_t color;
+
+		color.r = src.r * dst.r >> 8;
+		color.g = src.g * dst.g >> 8;
+		color.b = src.b * dst.b >> 8;
 		color.a = src.a;
 
 		return color;

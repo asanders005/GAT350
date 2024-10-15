@@ -55,7 +55,10 @@ int main(int argc, char* argv[])
 		framebuffer->DrawImage(450, 500, scenery);
 		Color::SetBlendMode(BlendMode::ALPHA);
 		framebuffer->DrawImage(360, 250, eevee);
-		framebuffer->DrawImage(mx, my, imageAlpha);
+		Color::SetBlendMode(BlendMode::ADDITIVE);
+		framebuffer->DrawImage(mx, my, pokeball);
+		Color::SetBlendMode(BlendMode::MULTIPLY);
+		framebuffer->DrawRect(10, 390, 200, 200, { 180, 25, 255, 128 });
 
 		//for (int i = 0; i < 3; i++)
 		//{

@@ -4,6 +4,9 @@
 #include "Image.h"
 #include "PostProcess.h"
 #include "Model.h"
+#include "ETime.h"
+#include "Transform.h"
+#include "Input.h"
 
 #include <iostream>
 #include <memory>
@@ -12,6 +15,10 @@
 
 int main(int argc, char* argv[])
 {
+	std::unique_ptr<Time> time = std::make_unique<Time>();
+	std::unique_ptr<Input> input = std::make_unique<Input>();
+	input->Initialize();
+
 	std::unique_ptr<Renderer> renderer = std::make_unique<Renderer>();
 	renderer->Initialize();
 	renderer->CreateWindow("window", 800, 600);
@@ -35,10 +42,14 @@ int main(int argc, char* argv[])
 
 	vertices_t vertices{ {-5, -5, 0}, {5, 5, 0}, {-5, 5, 0} };
 	Model model(vertices, {128, 28, 255, 255});
+	Transform transform{ {200, 300, 0}, {0, 0, 0}, {5, 5, 5} };
 
 	bool quit = false;
 	while (!quit)
 	{
+		time->Tick();
+		input->Update();
+
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
@@ -120,16 +131,18 @@ int main(int argc, char* argv[])
 
 #pragma endregion
 		
-		int ticks = SDL_GetTicks();
-		float time = ticks * 0.001f;
-		float t = std::abs(std::sin(time));
-		glm::mat4 modelMatrix = glm::mat4(1.0f);
-		glm::mat4 translate = glm::translate(modelMatrix, glm::vec3(mx, my, 0.0f));
-		glm::mat4 scale = glm::scale(modelMatrix, glm::vec3(5));
-		glm::mat4 rotate = glm::rotate(glm::identity<glm::mat4>(), glm::radians(time * 90), glm::vec3(1, 1, 1));
-		modelMatrix = translate * scale * rotate;
+		glm::vec3 direction{ 0 };
+		if (input->GetKeyDown(SDL_SCANCODE_D)) direction.x += 1;
+		if (input->GetKeyDown(SDL_SCANCODE_A)) direction.x -= 1;
+		if (input->GetKeyDown(SDL_SCANCODE_E)) direction.y -= 1;
+		if (input->GetKeyDown(SDL_SCANCODE_Q)) direction.y += 1;
+		if (input->GetKeyDown(SDL_SCANCODE_S)) direction.z -= 1;
+		if (input->GetKeyDown(SDL_SCANCODE_W)) direction.z += 1;
+		
+		transform.position += direction * 75.0f * time->GetDeltaTime();
+		transform.rotation += time->GetDeltaTime() * 135;
 
-		model.Draw(*framebuffer.get(), modelMatrix);
+		model.Draw(*framebuffer.get(), transform.GetMatrix());
 
 		framebuffer->Update();
 
@@ -137,6 +150,8 @@ int main(int argc, char* argv[])
 
 		renderer->EndFrame();
 	}
+
+	input->Shutdown();
 
 	return 0;
 }

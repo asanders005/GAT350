@@ -15,6 +15,9 @@ public:
 
 	void operator = (const class Framebuffer& framebuffer);
 
+	int GetWidth() { return m_width; }
+	int GetHeight() { return m_height; }
+
 	friend class Framebuffer;
 
 private:

@@ -7,6 +7,7 @@
 #include "ETime.h"
 #include "Transform.h"
 #include "Input.h"
+#include "Camera.h"
 
 #include <iostream>
 #include <memory>
@@ -21,9 +22,14 @@ int main(int argc, char* argv[])
 
 	std::unique_ptr<Renderer> renderer = std::make_unique<Renderer>();
 	renderer->Initialize();
-	renderer->CreateWindow("window", 800, 600);
+	renderer->CreateWindow("window", 1400, 900);
 
-	std::unique_ptr<Framebuffer> framebuffer = std::make_unique<Framebuffer>(*renderer.get(), 800, 600);
+	std::unique_ptr<Camera> camera = std::make_unique<Camera>(renderer->GetWidth(), renderer->GetHeight());
+	camera->SetView({ 0, 0, -50 }, glm::vec3{ 0 });
+	camera->SetProjection(60.0f, (float)renderer->GetWidth() / renderer->GetHeight(), 0.1f, 200.0f);
+	Transform cameraTransform{ { 0, 0, -50 } };
+
+	std::unique_ptr<Framebuffer> framebuffer = std::make_unique<Framebuffer>(*renderer.get(), renderer->GetWidth(), renderer->GetHeight());
 
 	Image scenery;
 	scenery.Load("Scenery.jpg");
@@ -42,7 +48,7 @@ int main(int argc, char* argv[])
 
 	vertices_t vertices{ {-5, -5, 0}, {5, 5, 0}, {-5, 5, 0} };
 	Model model(vertices, {128, 28, 255, 255});
-	Transform transform{ {200, 300, 0}, {0, 0, 0}, {5, 5, 5} };
+	Transform transform{ {0, 0, 0}, {0, 0, 0}, glm::vec3{ 2 } };
 
 	bool quit = false;
 	while (!quit)
@@ -134,15 +140,17 @@ int main(int argc, char* argv[])
 		glm::vec3 direction{ 0 };
 		if (input->GetKeyDown(SDL_SCANCODE_D)) direction.x += 1;
 		if (input->GetKeyDown(SDL_SCANCODE_A)) direction.x -= 1;
-		if (input->GetKeyDown(SDL_SCANCODE_E)) direction.y -= 1;
-		if (input->GetKeyDown(SDL_SCANCODE_Q)) direction.y += 1;
-		if (input->GetKeyDown(SDL_SCANCODE_S)) direction.z -= 1;
+		if (input->GetKeyDown(SDL_SCANCODE_E)) direction.y += 1;
+		if (input->GetKeyDown(SDL_SCANCODE_Q)) direction.y -= 1;
 		if (input->GetKeyDown(SDL_SCANCODE_W)) direction.z += 1;
+		if (input->GetKeyDown(SDL_SCANCODE_S)) direction.z -= 1;
 		
-		transform.position += direction * 75.0f * time->GetDeltaTime();
+		cameraTransform.position += direction * 75.0f * time->GetDeltaTime();
+		camera->SetView(cameraTransform.position, cameraTransform.position + glm::vec3{ 0, 0, 1 });
+
 		transform.rotation += time->GetDeltaTime() * 135;
 
-		model.Draw(*framebuffer.get(), transform.GetMatrix());
+		model.Draw(*framebuffer.get(), transform.GetMatrix(), *camera.get());
 
 		framebuffer->Update();
 

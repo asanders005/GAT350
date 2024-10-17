@@ -46,9 +46,11 @@ int main(int argc, char* argv[])
 
 	Color::SetBlendMode(BlendMode::NORMAL);
 
-	vertices_t vertices{ {-5, -5, 0}, {5, 5, 0}, {-5, 5, 0} };
-	Model model(vertices, {128, 28, 255, 255});
-	Transform transform{ {0, 0, 0}, {0, 0, 0}, glm::vec3{ 2 } };
+	//vertices_t vertices{ {-5, -5, 0}, {5, 5, 0}, {-5, 5, 0} };
+	Model model;
+	model.Load("fox.obj");
+	model.SetColor({ 255, 128, 0, 255 });
+	Transform transform{ {0, 0, 0}, {0, 0, 0}, glm::vec3{ 3 } };
 
 	bool quit = false;
 	while (!quit)
@@ -131,9 +133,9 @@ int main(int argc, char* argv[])
 		//Post::EmbossColor(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height);
 		
 
-		Post::ColorBalance(framebuffer->m_buffer, 12, -7, 12);
+		/*Post::ColorBalance(framebuffer->m_buffer, 12, -7, 12);
 		Post::GaussianBlur(framebuffer->m_buffer, framebuffer->m_width, framebuffer->m_height);
-		Post::Posterize(framebuffer->m_buffer, 8);
+		Post::Posterize(framebuffer->m_buffer, 8);*/
 
 #pragma endregion
 		
@@ -146,9 +148,9 @@ int main(int argc, char* argv[])
 		if (input->GetKeyDown(SDL_SCANCODE_S)) direction.z -= 1;
 		
 		cameraTransform.position += direction * 75.0f * time->GetDeltaTime();
-		camera->SetView(cameraTransform.position, cameraTransform.position + glm::vec3{ 0, 0, 1 });
+		camera->SetView(cameraTransform.position, /*cameraTransform.position*/ + glm::vec3{0, 0, 0});
 
-		transform.rotation += time->GetDeltaTime() * 135;
+		//transform.rotation += time->GetDeltaTime() * 135;
 
 		model.Draw(*framebuffer.get(), transform.GetMatrix(), *camera.get());
 

@@ -1,7 +1,5 @@
 #include "Input.h"
 #include <SDL.h>
-#include <SDL_mouse.h>
-#include <iostream>
 
 bool Input::Initialize()
 {
@@ -14,13 +12,6 @@ bool Input::Initialize()
 	std::copy(keyboardState, keyboardState + numKeys, m_keyboardState.begin());
 
 	m_prevKeyboardState = m_keyboardState;
-	
-	int x, y;
-	SDL_GetMouseState(&x, &y);
-	m_prevMousePosition.x = (float)x;
-	m_prevMousePosition.y = (float)y;
-	m_mousePosition.x = (float)x;
-	m_mousePosition.y = (float)y;
 
 	return true;
 }
@@ -41,7 +32,6 @@ void Input::Update()
 	int x, y;
 	uint32_t buttonState = SDL_GetMouseState(&x, &y);
 
-	m_prevMousePosition = m_mousePosition;
 	m_mousePosition.x = (float)x;
 	m_mousePosition.y = (float)y;
 

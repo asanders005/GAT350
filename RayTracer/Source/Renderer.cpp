@@ -35,8 +35,6 @@ bool Renderer::CreateWindow(std::string name, int width, int height)
 	// create renderer
 	m_renderer = SDL_CreateRenderer(m_window, -1, 0);
 
-	SDL_SetRelativeMouseMode(SDL_TRUE);
-
     return true;
 }
 
@@ -49,7 +47,6 @@ void Renderer::BeginFrame()
 
 void Renderer::EndFrame()
 {
-	//SDL_WarpMouseInWindow(m_window, m_width / 2, m_height / 2);
 	// show screen
 	SDL_RenderPresent(m_renderer);
 }

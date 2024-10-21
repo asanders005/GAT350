@@ -8,8 +8,6 @@
 #include "Transform.h"
 #include "Input.h"
 #include "Camera.h"
-#include "Actor.h"
-#include "Random.h"
 
 #include <iostream>
 #include <memory>
@@ -49,19 +47,10 @@ int main(int argc, char* argv[])
 	Color::SetBlendMode(BlendMode::NORMAL);
 
 	//vertices_t vertices{ {-5, -5, 0}, {5, 5, 0}, {-5, 5, 0} };
-	std::shared_ptr<Model> model = std::make_shared<Model>();
-	model->Load("fox.obj");
-	model->SetColor({ 255, 128, 0, 255 });
-
-	std::vector<std::unique_ptr<Actor>> actors;
-
-	for (int i = 0; i < 5; i++)
-	{
-		Transform transform{ {randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f)}, {0, 0, 0}, glm::vec3{4}};
-		std::unique_ptr<Actor> actor = std::make_unique<Actor>(transform, model);
-		actor->SetColor({ (uint8_t)random(0, 255), (uint8_t)random(0, 255), (uint8_t)random(0, 255), (uint8_t)random(0, 255) });
-		actors.push_back(std::move(actor));
-	}
+	Model model;
+	model.Load("fox.obj");
+	model.SetColor({ 255, 128, 0, 255 });
+	Transform transform{ {0, 0, 0}, {0, 0, 0}, glm::vec3{ 4 } };
 
 	bool quit = false;
 	while (!quit)
@@ -157,18 +146,13 @@ int main(int argc, char* argv[])
 		if (input->GetKeyDown(SDL_SCANCODE_Q)) direction.y -= 1;
 		if (input->GetKeyDown(SDL_SCANCODE_W)) direction.z += 1;
 		if (input->GetKeyDown(SDL_SCANCODE_S)) direction.z -= 1;
-
-		cameraTransform.rotation.y += input->GetMousePositionDelta().x * 0.5f;
-		cameraTransform.rotation.x -= input->GetMousePositionDelta().y * 0.5f;
 		
 		cameraTransform.position += direction * 75.0f * time->GetDeltaTime();
-		camera->SetView(cameraTransform.position, cameraTransform.position + cameraTransform.GetForward());
+		camera->SetView(cameraTransform.position, /*cameraTransform.position*/ + glm::vec3{0, 0, 0});
 
 		//transform.rotation += time->GetDeltaTime() * 135;
-		for (auto& actor : actors)
-		{
-			actor->Draw(*framebuffer.get(), *camera.get());
-		}
+
+		model.Draw(*framebuffer.get(), transform.GetMatrix(), *camera.get());
 
 		framebuffer->Update();
 

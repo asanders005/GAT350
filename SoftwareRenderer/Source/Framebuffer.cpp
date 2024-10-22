@@ -291,8 +291,8 @@ int Framebuffer::ComputeRegionCode(int x, int y)
 
 	if (x < 0) code |= LEFT;
 	else if (x >= m_width) code |= RIGHT;
-	if (y < 0) code |= TOP;
-	else if (y >= m_height) code |= BOTTOM;
+	if (y < 0) code |= BOTTOM;
+	else if (y >= m_height) code |= TOP;
 
 	return code;
 }

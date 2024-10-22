@@ -19,12 +19,14 @@
 int main(int argc, char* argv[])
 {
 	std::unique_ptr<Time> time = std::make_unique<Time>();
-	std::unique_ptr<Input> input = std::make_unique<Input>();
-	input->Initialize();
 
 	std::unique_ptr<Renderer> renderer = std::make_unique<Renderer>();
 	renderer->Initialize();
 	renderer->CreateWindow("window", 1400, 900);
+
+	std::unique_ptr<Input> input = std::make_unique<Input>();
+	input->Initialize();
+	input->Update();
 
 	std::unique_ptr<Camera> camera = std::make_unique<Camera>(renderer->GetWidth(), renderer->GetHeight());
 	camera->SetView({ 0, 0, -50 }, glm::vec3{ 0 });
@@ -33,7 +35,7 @@ int main(int argc, char* argv[])
 
 	std::unique_ptr<Framebuffer> framebuffer = std::make_unique<Framebuffer>(*renderer.get(), renderer->GetWidth(), renderer->GetHeight());
 
-	/*Image scenery;
+	Image scenery;
 	scenery.Load("Scenery.jpg");
 
 	Image eevee;
@@ -44,7 +46,7 @@ int main(int argc, char* argv[])
 
 	Image imageAlpha;
 	imageAlpha.Load("colors.png");
-	Post::Alpha(imageAlpha.m_buffer, 64);*/
+	Post::Alpha(imageAlpha.m_buffer, 64);
 
 	Color::SetBlendMode(BlendMode::NORMAL);
 
@@ -57,7 +59,7 @@ int main(int argc, char* argv[])
 
 	for (int i = 0; i < 5; i++)
 	{
-		Transform transform{ {randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f)}, {0, 0, 0}, glm::vec3{4}};
+		Transform transform{ {randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f)}, {0, randomf(-90, 90), 0}, glm::vec3{4}};
 		std::unique_ptr<Actor> actor = std::make_unique<Actor>(transform, model);
 		actor->SetColor({ (uint8_t)random(0, 255), (uint8_t)random(0, 255), (uint8_t)random(0, 255), (uint8_t)random(0, 255) });
 		actors.push_back(std::move(actor));
@@ -91,8 +93,8 @@ int main(int argc, char* argv[])
 
 #pragma region Images
 		/*Color::SetBlendMode(BlendMode::NORMAL);
-		framebuffer->DrawImage(450, 500, scenery);
-		Color::SetBlendMode(BlendMode::ALPHA);
+		framebuffer->DrawImage(700, 450, scenery);*/
+		/*Color::SetBlendMode(BlendMode::ALPHA);
 		framebuffer->DrawImage(360, 250, eevee);*/
 		//Color::SetBlendMode(BlendMode::ADDITIVE);
 		//framebuffer->DrawImage(mx, my, pokeball);
@@ -150,18 +152,31 @@ int main(int argc, char* argv[])
 
 #pragma endregion
 		
-		glm::vec3 direction{ 0 };
-		if (input->GetKeyDown(SDL_SCANCODE_D)) direction.x += 1;
-		if (input->GetKeyDown(SDL_SCANCODE_A)) direction.x -= 1;
-		if (input->GetKeyDown(SDL_SCANCODE_E)) direction.y += 1;
-		if (input->GetKeyDown(SDL_SCANCODE_Q)) direction.y -= 1;
-		if (input->GetKeyDown(SDL_SCANCODE_W)) direction.z += 1;
-		if (input->GetKeyDown(SDL_SCANCODE_S)) direction.z -= 1;
+		if (input->GetMouseButtonDown(2))
+		{
+			input->SetRelativeMode(true);
 
-		cameraTransform.rotation.y += input->GetMousePositionDelta().x * 0.5f;
-		cameraTransform.rotation.x -= input->GetMousePositionDelta().y * 0.5f;
+			glm::vec3 direction{ 0 };
+			if (input->GetKeyDown(SDL_SCANCODE_D)) direction.x += 1;
+			if (input->GetKeyDown(SDL_SCANCODE_A)) direction.x -= 1;
+			if (input->GetKeyDown(SDL_SCANCODE_E)) direction.y += 1;
+			if (input->GetKeyDown(SDL_SCANCODE_Q)) direction.y -= 1;
+			if (input->GetKeyDown(SDL_SCANCODE_W)) direction.z += 1;
+			if (input->GetKeyDown(SDL_SCANCODE_S)) direction.z -= 1;
+
+			cameraTransform.rotation.y += input->GetMouseRelative().x * 0.5f;
+			cameraTransform.rotation.x += input->GetMouseRelative().y * 0.5f;
+			cameraTransform.rotation.x = Math::Clamp(cameraTransform.rotation.x, -89.99f, 89.99f);
+
+			glm::vec3 offset = cameraTransform.GetMatrix() * glm::vec4{ direction, 0 };
+
+			cameraTransform.position += offset * 50.0f * time->GetDeltaTime();
+		}
+		else
+		{
+			input->SetRelativeMode(false);
+		}
 		
-		cameraTransform.position += direction * 75.0f * time->GetDeltaTime();
 		camera->SetView(cameraTransform.position, cameraTransform.position + cameraTransform.GetForward());
 
 		//transform.rotation += time->GetDeltaTime() * 135;

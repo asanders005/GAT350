@@ -17,7 +17,7 @@ glm::vec3 Camera::ModelToView(const glm::vec3& position) const
 	return m_view * glm::vec4{ position, 1 };
 }
 
-glm::vec3 Camera::ViewToProjection(const glm::vec3& position) const
+glm::vec4 Camera::ViewToProjection(const glm::vec3& position) const
 {
 	// Convert point from view space to projection space
 	return m_projection * glm::vec4{ position, 1 };
@@ -25,9 +25,14 @@ glm::vec3 Camera::ViewToProjection(const glm::vec3& position) const
 
 glm::ivec2 Camera::ToScreen(const glm::vec3& position) const
 {
-	glm::vec4 clip = m_projection * glm::vec4{ position, 1 };
+	glm::vec4 clip = ViewToProjection(position);
+
+	if (clip.w == 0) return glm::ivec2{ -1, -1 };
 
 	glm::vec3 ndc = clip / clip.w;
+
+	//don't draw if outside near and far
+	if (ndc.z < -1 || ndc.z > 1) return glm::ivec2{ -1, -1 };
 
 	float x = (ndc.x + 1) * (m_width * 0.5);
 	float y = (1 - ndc.y) * (m_height * 0.5);

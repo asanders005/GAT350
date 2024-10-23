@@ -51,19 +51,34 @@ int main(int argc, char* argv[])
 	Color::SetBlendMode(BlendMode::NORMAL);
 
 	//vertices_t vertices{ {-5, -5, 0}, {5, 5, 0}, {-5, 5, 0} };
-	std::shared_ptr<Model> model = std::make_shared<Model>();
-	model->Load("fox.obj");
-	model->SetColor({ 255, 128, 0, 255 });
+	std::shared_ptr<Model> fox = std::make_shared<Model>();
+	fox->Load("fox.obj");
+	fox->SetColor({ 255, 128, 0, 255 });
+	
+	/*std::shared_ptr<Model> gate = std::make_shared<Model>();
+	gate->Load("gate.obj");
+	gate->SetColor({ 255, 128, 0, 255 });*/
+	
+	std::shared_ptr<Model> tree = std::make_shared<Model>();
+	tree->Load("tree.obj");
+	tree->SetColor({ 255, 128, 0, 255 });
 
 	std::vector<std::unique_ptr<Actor>> actors;
 
-	for (int i = 0; i < 5; i++)
-	{
-		Transform transform{ {randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f)}, {0, randomf(-90, 90), 0}, glm::vec3{4}};
-		std::unique_ptr<Actor> actor = std::make_unique<Actor>(transform, model);
-		actor->SetColor({ (uint8_t)random(0, 255), (uint8_t)random(0, 255), (uint8_t)random(0, 255), (uint8_t)random(0, 255) });
-		actors.push_back(std::move(actor));
-	}
+	Transform transform{ {randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f)}, {0, randomf(-90, 90), 0}, glm::vec3{4}};
+	std::unique_ptr<Actor> actor = std::make_unique<Actor>(transform, fox);
+	actor->SetColor({ 255, 128, 0, 255 });
+	actors.push_back(std::move(actor));
+	
+	/*transform = { {randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f)}, {0, randomf(-90, 90), 0}, glm::vec3{4}};
+	actor = std::make_unique<Actor>(transform, gate);
+	actor->SetColor({ 255, 28, 28, 255 });
+	actors.push_back(std::move(actor));*/
+
+	transform = { {randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f), randomf(-10.0f, 10.0f)}, {0, randomf(-90, 90), 0}, glm::vec3{0.25f} };
+	actor = std::make_unique<Actor>(transform, tree);
+	actor->SetColor({ 255, 0, 255, 255 });
+	actors.push_back(std::move(actor));
 
 	bool quit = false;
 	while (!quit)

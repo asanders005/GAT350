@@ -154,6 +154,7 @@
     <ClCompile Include="Source\Model.cpp" />
     <ClCompile Include="Source\PostProcess.cpp" />
     <ClCompile Include="Source\Renderer.cpp" />
+    <ClCompile Include="Source\Tracer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Camera.h" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Source\Random.h" />
     <ClInclude Include="Source\Ray.h" />
     <ClInclude Include="Source\Renderer.h" />
+    <ClInclude Include="Source\Tracer.h" />
     <ClInclude Include="Source\Transform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

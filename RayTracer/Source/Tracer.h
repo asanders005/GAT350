@@ -1,12 +1,8 @@
 #pragma once
+#include "Color.h"
 
 class Tracer
 {
 public:
-	Tracer() = default;
-
-	void Render(class Framebuffer& framebuffer, const class Camera& camera);
-
-private:
-
+	static color3_t Trace(class Scene& scene, const struct ray_t& ray);
 };

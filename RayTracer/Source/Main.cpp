@@ -9,6 +9,7 @@
 #include "Input.h"
 #include "Camera.h"
 #include "Tracer.h"
+#include "Scene.h"
 
 #include <iostream>
 #include <memory>
@@ -17,25 +18,30 @@
 
 int main(int argc, char* argv[])
 {
-	std::unique_ptr<Time> time = std::make_unique<Time>();
+	Time time;
 
-	std::unique_ptr<Renderer> renderer = std::make_unique<Renderer>();
-	renderer->Initialize();
-	renderer->CreateWindow("Ray Tracer", 1600, 900);
+	Renderer renderer;
+	renderer.Initialize();
+	renderer.CreateWindow("Ray Tracer", 1600, 900);
 
-	std::unique_ptr<Framebuffer> framebuffer = std::make_unique<Framebuffer>(*renderer.get(), renderer->GetWidth(), renderer->GetHeight());
+	Framebuffer framebuffer{ renderer, renderer.GetWidth(), renderer.GetHeight() };
 
-	Camera camera{ 70.0f, (float)renderer->GetWidth() / renderer->GetHeight() };
+	Camera camera{ 70.0f, (float)renderer.GetWidth() / renderer.GetHeight() };
 	camera.SetView({ 0, 0, -20 }, { 0, 0, 0 });
 
-	Tracer tracer;
+	Scene scene;
+
+	std::shared_ptr<Material> material = std::make_shared<Material>(color3_t{ 0.35f, 0.0f, 0.75f });
+	std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(glm::vec3{ 0 }, 10.0f, material);
+	
+	scene.AddObject(std::move(sphere));
 
 	Color::SetBlendMode(BlendMode::NORMAL);
 
 	bool quit = false;
 	while (!quit)
 	{
-		time->Tick();
+		time.Tick();
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
@@ -52,15 +58,15 @@ int main(int argc, char* argv[])
 
 		//renderer->BeginFrame();
 
-		framebuffer->Clear(Color::ColorConvert(color3_t{ 0.35f, 0, 0.65f }));
+		framebuffer.Clear(Color::ColorConvert(color3_t{ 0.25f, 1.0f, 0.25f }));
 
-		tracer.Render(*framebuffer.get(), camera);
+		scene.Render(framebuffer, camera);
 
-		framebuffer->Update();
+		framebuffer.Update();
 
-		renderer->CopyFramebuffer(*framebuffer.get());
+		renderer.CopyFramebuffer(framebuffer);
 
-		renderer->EndFrame();
+		renderer.EndFrame();
 	}
 
 	return 0;

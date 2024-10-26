@@ -1,5 +1,6 @@
 #pragma once
 #include "Sphere.h"
+#include "Plane.h"
 
 #include <memory>
 #include <vector>

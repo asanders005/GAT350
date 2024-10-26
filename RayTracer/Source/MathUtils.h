@@ -1,4 +1,5 @@
 #pragma once
+#define FLT_EPSILON 1.192092896e-07F
 #include <random>
 #include <glm/glm.hpp>
 
@@ -13,6 +14,12 @@ namespace Math
 	inline int Random(int min, int max)
 	{
 		return (std::rand() % (max - min) + 1) + min;
+	}
+
+	inline bool approximately(float value1, float value2)
+	{
+		// check if the difference between the values is less than epsilon
+		return (std::abs(value1 - value2) < FLT_EPSILON);
 	}
 
 	template<typename T>

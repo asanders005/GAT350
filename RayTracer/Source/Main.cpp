@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "Tracer.h"
 #include "Scene.h"
+#include "Random.h"
 
 #include <iostream>
 #include <memory>
@@ -18,6 +19,8 @@
 
 int main(int argc, char* argv[])
 {
+	srand(time(0));
+
 	Time time;
 
 	Renderer renderer;
@@ -31,10 +34,36 @@ int main(int argc, char* argv[])
 
 	Scene scene;
 
-	std::shared_ptr<Material> material = std::make_shared<Material>(color3_t{ 0.35f, 0.0f, 0.75f });
-	std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(glm::vec3{ 0 }, 10.0f, material);
+	std::shared_ptr<Material> red = std::make_shared<Material>(color3_t{ 1.0f, 0.0f, 0.0f });
+	std::shared_ptr<Material> orange = std::make_shared<Material>(color3_t{ 1.0f, 0.5f, 0.0f });
+	std::shared_ptr<Material> yellow = std::make_shared<Material>(color3_t{ 0.85f, 1.0f, 0.0f });
+	std::shared_ptr<Material> green = std::make_shared<Material>(color3_t{ 0.0f, 1.0f, 0.0f });
+	std::shared_ptr<Material> turqoise = std::make_shared<Material>(color3_t{ 0.0f, 0.75f, 0.75f });
+	std::shared_ptr<Material> blue = std::make_shared<Material>(color3_t{ 0.0f, 0.0f, 1.0f });
+	std::shared_ptr<Material> purple = std::make_shared<Material>(color3_t{ 0.35f, 0.0f, 0.75f });
+	std::shared_ptr<Material> grey = std::make_shared<Material>(color3_t{ 0.5f, 0.5f, 0.5f });
+	std::shared_ptr<Material> dark = std::make_shared<Material>(color3_t{ 0.1f, 0.0f, 0.2f });
+
+	std::vector<std::shared_ptr<Material>> materials;
+
+	materials.push_back(red);
+	materials.push_back(orange);
+	materials.push_back(yellow);
+	materials.push_back(green);
+	materials.push_back(turqoise);
+	materials.push_back(blue);
+	materials.push_back(purple);
+	materials.push_back(grey);
+	materials.push_back(dark);
+
+	for (int i = 0; i < random(10, 30); i++)
+	{
+		std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(random(glm::vec3{ -60, -2, 2 }, glm::vec3{ 60, 50, 75 }), randomf(1.0f, 10.0f), materials[random(8)]);
+		scene.AddObject(std::move(sphere));
+	}
 	
-	scene.AddObject(std::move(sphere));
+	std::unique_ptr<Plane> plane = std::make_unique<Plane>(glm::vec3{ 0, -2, 0 }, glm::vec3{ 0, 1, 0 }, dark);
+	scene.AddObject(std::move(plane));
 
 	Color::SetBlendMode(BlendMode::NORMAL);
 

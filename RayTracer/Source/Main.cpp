@@ -34,15 +34,23 @@ int main(int argc, char* argv[])
 
 	Scene scene;
 
-	std::shared_ptr<Material> red = std::make_shared<Lambertian>(color3_t{ 1.0f, 0.0f, 0.0f });
-	std::shared_ptr<Material> orange = std::make_shared<Lambertian>(color3_t{ 1.0f, 0.5f, 0.0f });
-	std::shared_ptr<Material> yellow = std::make_shared<Lambertian>(color3_t{ 0.85f, 1.0f, 0.0f });
-	std::shared_ptr<Material> green = std::make_shared<Lambertian>(color3_t{ 0.0f, 1.0f, 0.0f });
-	std::shared_ptr<Material> turqoise = std::make_shared<Lambertian>(color3_t{ 0.0f, 0.75f, 0.75f });
-	std::shared_ptr<Material> blue = std::make_shared<Lambertian>(color3_t{ 0.0f, 0.0f, 1.0f });
-	std::shared_ptr<Material> purple = std::make_shared<Lambertian>(color3_t{ 0.35f, 0.0f, 0.75f });
-	std::shared_ptr<Material> grey = std::make_shared<Lambertian>(color3_t{ 0.5f, 0.5f, 0.5f });
-	std::shared_ptr<Material> dark = std::make_shared<Lambertian>(color3_t{ 0.1f, 0.0f, 0.2f });
+	std::shared_ptr<Material> dark		= std::make_shared<Lambertian>(color3_t{ 0.1f, 0.0f, 0.2f });
+	std::shared_ptr<Material> red		= std::make_shared<Lambertian>(color3_t{ 1.0f, 0.0f, 0.0f });
+	std::shared_ptr<Material> orange	= std::make_shared<Lambertian>(color3_t{ 1.0f, 0.5f, 0.0f });
+	std::shared_ptr<Material> yellow	= std::make_shared<Lambertian>(color3_t{ 0.85f, 1.0f, 0.0f });
+	std::shared_ptr<Material> green		= std::make_shared<Lambertian>(color3_t{ 0.0f, 1.0f, 0.0f });
+	std::shared_ptr<Material> turqoise	= std::make_shared<Lambertian>(color3_t{ 0.0f, 0.75f, 0.75f });
+	std::shared_ptr<Material> blue		= std::make_shared<Lambertian>(color3_t{ 0.0f, 0.0f, 1.0f });
+	std::shared_ptr<Material> purple	= std::make_shared<Lambertian>(color3_t{ 0.35f, 0.0f, 0.75f });
+	std::shared_ptr<Material> grey		= std::make_shared<Lambertian>(color3_t{ 0.5f, 0.5f, 0.5f });
+	std::shared_ptr<Material> Metalred		= std::make_shared<Metal>(color3_t{ 1.0f, 0.0f, 0.0f }, 0.3f);
+	std::shared_ptr<Material> Metalorange	= std::make_shared<Metal>(color3_t{ 1.0f, 0.5f, 0.0f }, 0.1f);
+	std::shared_ptr<Material> Metalyellow	= std::make_shared<Metal>(color3_t{ 0.85f, 1.0f, 0.0f }, 0.3f);
+	std::shared_ptr<Material> Metalgreen	= std::make_shared<Metal>(color3_t{ 0.0f, 1.0f, 0.0f }, 0.1f);
+	std::shared_ptr<Material> Metalturqoise = std::make_shared<Metal>(color3_t{ 0.0f, 0.75f, 0.75f }, 0.1f);
+	std::shared_ptr<Material> Metalblue		= std::make_shared<Metal>(color3_t{ 0.0f, 0.0f, 1.0f }, 0.3f);
+	std::shared_ptr<Material> Metalpurple	= std::make_shared<Metal>(color3_t{ 0.35f, 0.0f, 0.75f }, 0.1f);
+	std::shared_ptr<Material> Metalgrey		= std::make_shared<Metal>(color3_t{ 0.5f, 0.5f, 0.5f }, 0.5f);
 
 	std::vector<std::shared_ptr<Material>> materials;
 
@@ -54,11 +62,19 @@ int main(int argc, char* argv[])
 	materials.push_back(blue);
 	materials.push_back(purple);
 	materials.push_back(grey);
+	materials.push_back(Metalred);
+	materials.push_back(Metalorange);
+	materials.push_back(Metalyellow);
+	materials.push_back(Metalgreen);
+	materials.push_back(Metalturqoise);
+	materials.push_back(Metalblue);
+	materials.push_back(Metalpurple);
+	materials.push_back(Metalgrey);
 	materials.push_back(dark);
 
 	for (int i = 0; i < 10; i++)
 	{
-		std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(random(glm::vec3{ -15, -2, -10 }, glm::vec3{ 15, 7.5, 30 }), randomf(0.5f, 3.0f), materials[random(8)]);
+		std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(random(glm::vec3{ -15, -2, -10 }, glm::vec3{ 15, 7.5, 30 }), randomf(0.5f, 3.0f), materials[random(16)]);
 		scene.AddObject(std::move(sphere));
 	}
 	

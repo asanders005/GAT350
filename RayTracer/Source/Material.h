@@ -11,6 +11,7 @@ public:
 	virtual bool Scatter(const ray_t& ray, const rayCastHit_t& rayCastHit, color3_t& attenuation, ray_t& scatter) const = 0;
 
 	color3_t& GetColor() { return m_albedo; }
+	virtual color3_t GetEmissive() const { return color3_t{ 0, 0, 0 }; }
 
 protected:
 	color3_t m_albedo;
@@ -33,4 +34,16 @@ public:
 
 protected:
 	float m_fuzz = 0;
+};
+
+class Emissive : public Material
+{
+public:
+	Emissive(const color3_t& albedo, float intensity = 1) : Material{ albedo }, m_intensity{ intensity } {}
+
+	bool Scatter(const ray_t& ray, const rayCastHit_t& rayCastHit, color3_t& attenuation, ray_t& scatter) const override { return false; }
+	color3_t GetEmissive() const override { return m_albedo * m_intensity; }
+
+private:
+	float m_intensity{ 1 };
 };

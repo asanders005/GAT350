@@ -51,6 +51,13 @@ int main(int argc, char* argv[])
 	std::shared_ptr<Material> Metalblue		= std::make_shared<Metal>(color3_t{ 0.0f, 0.0f, 1.0f }, 0.3f);
 	std::shared_ptr<Material> Metalpurple	= std::make_shared<Metal>(color3_t{ 0.35f, 0.0f, 0.75f }, 0.1f);
 	std::shared_ptr<Material> Metalgrey		= std::make_shared<Metal>(color3_t{ 0.5f, 0.5f, 0.5f }, 0.5f);
+	std::shared_ptr<Material> Emissivered		= std::make_shared<Emissive>(color3_t{ 1.0f, 0.0f, 0.0f }, 1.75f);
+	std::shared_ptr<Material> Emissiveorange	= std::make_shared<Emissive>(color3_t{ 1.0f, 0.5f, 0.0f }, 1.5f);
+	std::shared_ptr<Material> Emissiveyellow	= std::make_shared<Emissive>(color3_t{ 0.85f, 1.0f, 0.0f }, 2.5f);
+	std::shared_ptr<Material> Emissivegreen		= std::make_shared<Emissive>(color3_t{ 0.0f, 1.0f, 0.0f }, 2.75f);
+	std::shared_ptr<Material> Emissiveturqoise	= std::make_shared<Emissive>(color3_t{ 0.0f, 0.75f, 0.75f }, 1.75f);
+	std::shared_ptr<Material> Emissiveblue		= std::make_shared<Emissive>(color3_t{ 0.0f, 0.0f, 1.0f }, 2.0f);
+	std::shared_ptr<Material> Emissivepurple	= std::make_shared<Emissive>(color3_t{ 0.35f, 0.0f, 0.75f }, 1.9f);
 
 	std::vector<std::shared_ptr<Material>> materials;
 
@@ -70,11 +77,18 @@ int main(int argc, char* argv[])
 	materials.push_back(Metalblue);
 	materials.push_back(Metalpurple);
 	materials.push_back(Metalgrey);
+	materials.push_back(Emissivered);
+	materials.push_back(Emissiveorange);
+	materials.push_back(Emissiveyellow);
+	materials.push_back(Emissivegreen);
+	materials.push_back(Emissiveturqoise);
+	materials.push_back(Emissiveblue);
+	materials.push_back(Emissivepurple);
 	materials.push_back(dark);
 
 	for (int i = 0; i < 10; i++)
 	{
-		std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(random(glm::vec3{ -15, -2, -10 }, glm::vec3{ 15, 7.5, 30 }), randomf(0.5f, 3.0f), materials[random(16)]);
+		std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(random(glm::vec3{ -15, -2, -10 }, glm::vec3{ 15, 7.5, 30 }), randomf(0.5f, 3.0f), materials[random(23)]);
 		scene.AddObject(std::move(sphere));
 	}
 	
@@ -105,7 +119,7 @@ int main(int argc, char* argv[])
 
 		framebuffer.Clear(Color::ColorConvert(color3_t{ 0.25f, 1.0f, 0.25f }));
 
-		scene.Render(framebuffer, camera);
+		scene.Render(framebuffer, camera, 30, 10);
 
 		framebuffer.Update();
 

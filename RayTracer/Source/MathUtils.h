@@ -33,9 +33,43 @@ namespace Math
 		return incident - (normal * glm::dot(normal, incident)) * 2.0f;
 	}
 
+	inline bool Refract(const glm::vec3& incident, const glm::vec3& normal, float refractiveIndex, glm::vec3& refracted)
+	{
+		glm::vec3 normalIncident = glm::normalize(incident);
+
+		float cosine = glm::dot(normalIncident, normal);
+
+		float discriminant = 1 - (refractiveIndex * refractiveIndex) + (1 - cosine * cosine);
+		if (discriminant > 0)
+		{
+			refracted = refractiveIndex * (normalIncident - (normal * cosine)) - (normal * glm::sqrt(discriminant));
+			return true;
+		}
+
+		return false;
+	}
+
+	inline float Schlick(float cosine, float index)
+	{
+		// Step 1: Calculate the base reflectance at zero incidence (angle = 0)
+		// This is the reflection coefficient when the light hits the surface straight on
+		float r0 = (1.0f - index) / (1.0f + index);
+		r0 = r0 * r0;
+
+		// Step 2: Use Schlick's approximation to adjust reflectance based on angle
+		// Schlick’s approximation gives the probability of reflection at an angle `cosine`
+		// It interpolates between `r0` and 1, with stronger reflection at glancing angles
+		return r0 + (1.0f - r0) * (float)std::pow((1.0f - cosine), 5);
+	}
+
 	inline float Dot(const glm::vec3& v1, const glm::vec3& v2)
 	{
 		return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+	}
+
+	inline float Angle(const glm::vec3& v1, const glm::vec3& v2)
+	{
+		return glm::acos(glm::dot(glm::normalize(v1), glm::normalize(v2)));
 	}
 
 	inline glm::vec3 Cross(const glm::vec3& v1, const glm::vec3& v2)

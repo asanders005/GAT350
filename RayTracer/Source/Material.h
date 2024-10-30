@@ -5,7 +5,7 @@
 class Material
 {
 public:
-	Material() = default;
+	//Material() = default;
 	Material(const color3_t& albedo) : m_albedo{ albedo } {}
 
 	virtual bool Scatter(const ray_t& ray, const rayCastHit_t& rayCastHit, color3_t& attenuation, ray_t& scatter) const = 0;
@@ -30,10 +30,21 @@ class Metal : public Material
 public:
 	Metal(const color3_t albedo, float fuzz) : Material{ albedo }, m_fuzz{ fuzz } {}
 
-	virtual bool Scatter(const ray_t& ray, const rayCastHit_t& rayCastHit, color3_t& attenuation, ray_t& scatter) const override;
+	bool Scatter(const ray_t& ray, const rayCastHit_t& rayCastHit, color3_t& attenuation, ray_t& scatter) const override;
 
 protected:
 	float m_fuzz = 0;
+};
+
+class Dielectric : public Material
+{
+public:
+	Dielectric(const color3_t albedo, float refractiveIndex) : Material{ albedo }, m_refractiveIndex{ refractiveIndex } {}
+
+	bool Scatter(const ray_t& ray, const rayCastHit_t& rayCastHit, color3_t& attenuation, ray_t& scatter) const override;
+
+protected:
+	float m_refractiveIndex = 0;
 };
 
 class Emissive : public Material

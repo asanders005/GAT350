@@ -36,10 +36,9 @@ namespace Math
 	inline bool Refract(const glm::vec3& incident, const glm::vec3& normal, float refractiveIndex, glm::vec3& refracted)
 	{
 		glm::vec3 normalIncident = glm::normalize(incident);
-
 		float cosine = glm::dot(normalIncident, normal);
 
-		float discriminant = 1 - (refractiveIndex * refractiveIndex) + (1 - cosine * cosine);
+		float discriminant = 1 - (refractiveIndex * refractiveIndex) * (1 - cosine * cosine);
 		if (discriminant > 0)
 		{
 			refracted = refractiveIndex * (normalIncident - (normal * cosine)) - (normal * glm::sqrt(discriminant));

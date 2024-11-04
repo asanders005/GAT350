@@ -34,20 +34,20 @@ bool Dielectric::Scatter(const ray_t& ray, const rayCastHit_t& rayCastHit, color
 	{
 		outNormal = rayCastHit.normal;
 		ni_over_nt = 1.0f / m_refractiveIndex;
-		cosine = -glm::dot(ray.direction, rayCastHit.normal) / ray.direction.length();
+		cosine = -glm::dot(ray.direction, rayCastHit.normal) / glm::length(ray.direction);
 	}
 	else
 	{
 		//Hitting from inside
 		outNormal = -rayCastHit.normal;
 		ni_over_nt = m_refractiveIndex;
-		cosine = m_refractiveIndex * glm::dot(ray.direction, rayCastHit.normal) / ray.direction.length();
+		cosine = m_refractiveIndex * glm::dot(ray.direction, rayCastHit.normal) / glm::length(ray.direction);
 	}
 
 	glm::vec3 refracted;
 	float reflectProbability = 1.0f;
 
-	if (Math::Refract(ray.direction, rayCastHit.normal, m_refractiveIndex, refracted))
+	if (Math::Refract(ray.direction, outNormal, ni_over_nt, refracted))
 	{
 		reflectProbability = Math::Schlick(cosine, m_refractiveIndex);
 	}

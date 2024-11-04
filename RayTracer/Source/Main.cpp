@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 	Framebuffer framebuffer{ renderer, renderer.GetWidth(), renderer.GetHeight() };
 
 	Camera camera{ 70.0f, (float)renderer.GetWidth() / renderer.GetHeight() };
-	camera.SetView({ 0, 0, -20 }, { 0, 0, 0 });
+	camera.SetView({ 0, 0, -5 }, { 0, 0, 0 });
 
 	Scene scene;
 
@@ -104,18 +104,27 @@ int main(int argc, char* argv[])
 	materials.push_back(Dielectricpurple);
 #pragma endregion
 
-	for (int i = 0; i < 10; i++)
+	/*for (int i = 0; i < 10; i++)
 	{
 		std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(random(glm::vec3{ -15, -2, -10 }, glm::vec3{ 15, 7.5, 30 }), randomf(0.5f, 3.0f), materials[random(1, materials.size())]);
 		scene.AddObject(std::move(sphere));
 	}
+	std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(glm::vec3(0, 1, -15), 1.0f, Dielectricwhite);
+	scene.AddObject(std::move(sphere));
+
+	std::unique_ptr<Triangle> triangle = std::make_unique<Triangle>(glm::vec3(0, 2, -17), glm::vec3(2, -1, -18), glm::vec3(-2, -1, -18), Dielectricorange);
+	scene.AddObject(std::move(triangle));*/
+
+	std::unique_ptr<Model> fox = std::make_unique<Model>(orange);
+	fox->Load("fox.obj");
+	scene.AddObject(std::move(fox));
 	
 	std::unique_ptr<Plane> plane = std::make_unique<Plane>(glm::vec3{ 0, -2, 0 }, glm::vec3{ 0, 1, 0 }, dark);
 	scene.AddObject(std::move(plane));
 
 	Color::SetBlendMode(BlendMode::NORMAL);
 
-	scene.Render(framebuffer, camera, 3, 5);
+	scene.Render(framebuffer, camera, 5, 3);
 
 	bool quit = false;
 	while (!quit)

@@ -6,6 +6,14 @@
 #include <fstream>
 #include <sstream>
 
+void Model::Update()
+{
+	for (size_t i = 0; i < m_local_vertices.size(); i++)
+	{
+		m_vertices[i] = m_transform * glm::vec4{ m_local_vertices[i], 1 };
+	}
+}
+
 bool Model::Load(const std::string& filename)
 {
 	std::ifstream input(filename);
@@ -55,23 +63,33 @@ bool Model::Load(const std::string& filename)
 				if (index[0])
 				{
 					glm::vec3 position = vertices[index[0] - 1];
-					m_vertices.push_back(position);
+					m_local_vertices.push_back(position);
 				}
 			}
 		}
 	}
 
+	m_vertices.resize(m_local_vertices.size());
 	input.close();
 	return true;
 }
 
 bool Model::Hit(const ray_t& ray, rayCastHit_t& rayCastHit, float minDistance, float maxDistance)
 {
+	//check for bounding sphere raycast
+
+	// check cast ray with mesh triangles
 	for (size_t i = 0; i < m_vertices.size(); i += 3)
 	{
-		Triangle triangle{ m_vertices[i + 0], m_vertices[i + 1], m_vertices[i + 2], m_material};
-		if (triangle.Hit(ray, rayCastHit, minDistance, maxDistance))
+		float t;
+		if (Triangle::Raycast(ray, m_vertices[i], m_vertices[i + 1], m_vertices[i + 2], minDistance, maxDistance, t))
 		{
+			rayCastHit.distance = t;
+			rayCastHit.point = ray.At(t);
+			glm::vec3 edge1 = m_vertices[i + 1] - m_vertices[i];
+			glm::vec3 edge2 = m_vertices[i + 2] - m_vertices[i];
+			rayCastHit.normal = glm::normalize(glm::cross(edge1, edge2));
+			rayCastHit.material = GetMaterial();
 			return true;
 		}
 	}

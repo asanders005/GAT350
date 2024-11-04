@@ -2,8 +2,21 @@
 
 bool Sphere::Hit(const ray_t& ray, rayCastHit_t& rayCastHit, float minDistance, float maxDistance)
 {
+	float t;
+	if (!Raycast(ray, m_transform.position, m_radius * m_transform.scale.x, minDistance, maxDistance, t)) return false;
+
+	rayCastHit.distance = t;
+	rayCastHit.point = ray.At(t);
+	rayCastHit.normal = glm::normalize(rayCastHit.point - m_transform.position);
+	rayCastHit.material = GetMaterial();
+
+	return true;
+}
+
+bool Sphere::Raycast(const ray_t& ray, const glm::vec3& center, float radius, float minDistance, float maxDistance, float& t)
+{
 	// Vector from the ray origin to the center of the sphere
-	glm::vec3 oc = ray.origin - m_center;
+	glm::vec3 oc = ray.origin - center;
 
 	// Coefficients for the quadratic equation
 	// a = dot(ray direction, ray direction), which is the square of the length of the ray direction
@@ -13,7 +26,7 @@ bool Sphere::Hit(const ray_t& ray, rayCastHit_t& rayCastHit, float minDistance, 
 	float b = 2 * glm::dot(ray.direction, oc);
 
 	// c = dot(oc, oc) - radius^2, which accounts for the distance from the origin to the center minus the radius of the sphere
-	float c = glm::dot(oc, oc) - (m_radius * m_radius);
+	float c = glm::dot(oc, oc) - (radius * radius);
 
 	// Discriminant of the quadratic equation: b^2 - 4ac
 	// This tells us how many real solutions (hits) exist:
@@ -24,25 +37,15 @@ bool Sphere::Hit(const ray_t& ray, rayCastHit_t& rayCastHit, float minDistance, 
 
 	if (discriminant >= 0)
 	{
-		float t = (-b - std::sqrt(discriminant)) / (2 * a);
+		t = (-b - std::sqrt(discriminant)) / (2 * a);
 		if (t >= minDistance && t <= maxDistance)
 		{
-			rayCastHit.distance = t;
-			rayCastHit.point = ray.At(t);
-			rayCastHit.normal = glm::normalize(rayCastHit.point - m_center);
-			rayCastHit.material = GetMaterial();
-
 			return true;
 		}
 
 		t = (-b + std::sqrt(discriminant)) / (2 * a);
 		if (t >= minDistance && t <= maxDistance)
 		{
-			rayCastHit.distance = t;
-			rayCastHit.point = ray.At(t);
-			rayCastHit.normal = glm::normalize(rayCastHit.point - m_center);
-			rayCastHit.material = GetMaterial();
-
 			return true;
 		}
 	}

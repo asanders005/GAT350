@@ -24,4 +24,6 @@ public:
 private:
 	vertices_t m_vertices;
 	vertices_t m_local_vertices;
+	glm::vec3 m_center;
+	float m_radius = 0;
 };

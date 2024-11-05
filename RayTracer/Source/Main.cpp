@@ -18,6 +18,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 void InitScene(Scene& scene);
+void InitCornellBox(Scene& scene);
 
 int main(int argc, char* argv[])
 {
@@ -32,13 +33,14 @@ int main(int argc, char* argv[])
 	Framebuffer framebuffer{ renderer, renderer.GetWidth(), renderer.GetHeight() };
 
 	Camera camera{ 70.0f, (float)renderer.GetWidth() / renderer.GetHeight() };
-	camera.SetView({ 0, 0, -5 }, { 0, 0, 0 });
+	camera.SetView({ 0, 0, -10 }, { 0, 0, 0 });
 
 	Scene scene;
-	InitScene(scene);
+	//InitScene(scene);
+	InitCornellBox(scene);
 
 	scene.Update();
-	scene.Render(framebuffer, camera, 3, 5);
+	scene.Render(framebuffer, camera, 10, 5);
 
 	bool quit = false;
 	while (!quit)
@@ -72,8 +74,9 @@ int main(int argc, char* argv[])
 
 void InitScene(Scene& scene)
 {
+	scene.SetSky(Color::HSVtoRGB(240, 0.75f, 0.1f), Color::HSVtoRGB(290, 0.5f, 0.5f));
 #pragma region MaterialCreation
-	std::shared_ptr<Material> dark = std::make_shared<Metal>(color3_t{ 0.1f, 0.0f, 0.2f }, 0.0f);
+	std::shared_ptr<Material> dark = std::make_shared<Metal>(Color::HSVtoRGB(290, 0.85f, 0.025f), 0.0f);
 	std::shared_ptr<Material> red = std::make_shared<Lambertian>(color3_t{ 1.0f, 0.0f, 0.0f });
 	std::shared_ptr<Material> orange = std::make_shared<Lambertian>(color3_t{ 1.0f, 0.5f, 0.0f });
 	std::shared_ptr<Material> yellow = std::make_shared<Lambertian>(color3_t{ 0.85f, 1.0f, 0.0f });
@@ -154,12 +157,46 @@ void InitScene(Scene& scene)
 	std::unique_ptr<Triangle> triangle = std::make_unique<Triangle>(glm::vec3(0, 2, -17), glm::vec3(2, -1, -18), glm::vec3(-2, -1, -18), Dielectricorange);
 	scene.AddObject(std::move(triangle));*/
 
-	std::unique_ptr<Model> model = std::make_unique<Model>(Transform{ { -2, 0, 5 }, { 5, 40, 0 }, glm::vec3{ 4 } }, orange);
+	std::unique_ptr<Model> model = std::make_unique<Model>(Transform{ { -2, 0, 5 }, { 5, 40, 0 }, glm::vec3{ 4 } }, std::make_shared<Dielectric>(Color::HSVtoRGB(randomf(0, 360), randomf(0, 1), randomf(0, 1)), randomf(1.0f, 3.0f)));
 	model->Load("models/cube.obj");
 	scene.AddObject(std::move(model));
+	std::unique_ptr<Model> model1 = std::make_unique<Model>(Transform{ { 5, 0, 5 }, { 0, -10, 0 }, glm::vec3{ 4 } }, std::make_shared<Emissive>(Color::HSVtoRGB(randomf(0, 360), randomf(0, 1), randomf(0, 1)), randomf(5.0f, 10.0f)));
+	model1->Load("models/suzanne.obj");
+	scene.AddObject(std::move(model1));
 
-	std::unique_ptr<Plane> plane = std::make_unique<Plane>(Transform{ { 0, -2, 0 }, { 0, 0, 10} }, dark);
+	std::unique_ptr<Plane> plane = std::make_unique<Plane>(Transform{ { 0, -2, 0 }, { 0, 0, 0} }, dark);
 	scene.AddObject(std::move(plane));
+
+	Color::SetBlendMode(BlendMode::NORMAL);
+}
+
+void InitCornellBox(Scene& scene)
+{
+	std::shared_ptr<Material> matWhiteWall = std::make_unique<Lambertian>(Color::HSVtoRGB(0.0f, 0.0f, 1.0f));
+	std::shared_ptr<Material> matRedWall = std::make_unique<Lambertian>(Color::HSVtoRGB(0.0f, 1.0f, 1.0f));
+	std::shared_ptr<Material> matGreenWall = std::make_unique<Lambertian>(Color::HSVtoRGB(120.0f, 1.0f, 1.0f));
+	std::shared_ptr<Material> matLight = std::make_unique<Emissive>(Color::HSVtoRGB(0.0f, 0.0f, 1.0f), 10.0f);
+
+#pragma region MakeRoom
+	std::unique_ptr<Plane> roof = std::make_unique<Plane>(Transform{ { 0, 5, 5 }, {180, 0, 0 } }, matWhiteWall);
+	scene.AddObject(std::move(roof));
+	std::unique_ptr<Plane> floor = std::make_unique<Plane>(Transform{ { 0, -5, 5 }, {0, 0, 0 } }, matWhiteWall);
+	scene.AddObject(std::move(floor));
+	std::unique_ptr<Plane> whiteWall = std::make_unique<Plane>(Transform{ { 0, 0, 5 }, {-90, 0, 0 } }, matWhiteWall);
+	scene.AddObject(std::move(whiteWall));
+	std::unique_ptr<Plane> redWall = std::make_unique<Plane>(Transform{ { -5, 0, 5 }, {0, 0, -90 } }, matRedWall);
+	scene.AddObject(std::move(redWall));
+	std::unique_ptr<Plane> greenWall = std::make_unique<Plane>(Transform{ { 5, 0, 5 }, {0, 0, 90 } }, matGreenWall);
+	scene.AddObject(std::move(greenWall));
+
+	std::unique_ptr<Model> light = std::make_unique<Model>(Transform{ { 0, 6, 0 }, glm::vec3{ 0 }, glm::vec3{ 2 } }, matLight);
+	light->Load("models/cube.obj");
+	scene.AddObject(std::move(light));
+#pragma endregion
+
+	std::unique_ptr<Model> teapot = std::make_unique<Model>(Transform{ { -2, 2, 1 }, { 0, 0, 0 }, glm::vec3{ 0.25f } }, std::make_shared<Metal>(Color::HSVtoRGB(285, 0.85f, 0.75f), 0.8f));
+	teapot->Load("models/teapot.obj");
+	scene.AddObject(std::move(teapot));
 
 	Color::SetBlendMode(BlendMode::NORMAL);
 }

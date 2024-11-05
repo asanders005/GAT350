@@ -2,6 +2,7 @@
 #include "Framebuffer.h"
 #include "Camera.h"
 #include "Triangle.h"
+#include "Sphere.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -11,6 +12,20 @@ void Model::Update()
 	for (size_t i = 0; i < m_local_vertices.size(); i++)
 	{
 		m_vertices[i] = m_transform * glm::vec4{ m_local_vertices[i], 1 };
+	}
+
+	m_center = glm::vec3{ 0 };
+	for (auto& vertex : m_vertices)
+	{
+		m_center += vertex;
+	}
+	m_center /= (float)m_vertices.size();
+
+	m_radius = 0;
+	for (auto& vertex : m_vertices)
+	{
+		float radius = glm::length(vertex - m_center);
+		m_radius = glm::max(radius, m_radius);
 	}
 }
 
@@ -82,6 +97,7 @@ bool Model::Hit(const ray_t& ray, rayCastHit_t& rayCastHit, float minDistance, f
 	for (size_t i = 0; i < m_vertices.size(); i += 3)
 	{
 		float t;
+		if (!Sphere::Raycast(ray, m_center, m_radius, minDistance, maxDistance, t)) return false;
 		if (Triangle::Raycast(ray, m_vertices[i], m_vertices[i + 1], m_vertices[i + 2], minDistance, maxDistance, t))
 		{
 			rayCastHit.distance = t;

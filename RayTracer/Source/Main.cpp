@@ -18,7 +18,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 void InitScene(Scene& scene);
+void InitScene01(Scene& scene, Camera& camera);
 void InitCornellBox(Scene& scene);
+void InitFinalScene(Scene& scene);
 
 int main(int argc, char* argv[])
 {
@@ -28,7 +30,7 @@ int main(int argc, char* argv[])
 
 	Renderer renderer;
 	renderer.Initialize();
-	renderer.CreateWindow("Ray Tracer", 1600, 900);
+	renderer.CreateWindow("Ray Tracer", 800, 600);
 
 	Framebuffer framebuffer{ renderer, renderer.GetWidth(), renderer.GetHeight() };
 
@@ -37,10 +39,12 @@ int main(int argc, char* argv[])
 
 	Scene scene;
 	//InitScene(scene);
-	InitCornellBox(scene);
+	//InitScene01(scene, camera);
+	//InitCornellBox(scene);
+	InitFinalScene(scene);
 
 	scene.Update();
-	scene.Render(framebuffer, camera, 10, 5);
+	scene.Render(framebuffer, camera, 3, 5);
 
 	bool quit = false;
 	while (!quit)
@@ -170,6 +174,56 @@ void InitScene(Scene& scene)
 	Color::SetBlendMode(BlendMode::NORMAL);
 }
 
+void InitScene01(Scene& scene, Camera& camera)
+{
+	camera.SetFOV(20.0f);
+	camera.SetView({ 13, 2, 3 }, { 0, 0, 0 });
+
+	auto ground_material = std::make_shared<Lambertian>(color3_t(0.5f));
+	scene.AddObject(std::make_unique<Plane>(Transform{ glm::vec3{ 0 } }, ground_material));
+
+	for (int a = -11; a < 11; a++) {
+		for (int b = -11; b < 11; b++) {
+			auto choose_mat = randomf();
+			glm::vec3 center(a + 0.9 * randomf(), 0.2, b + 0.9 * randomf());
+
+			if ((center - glm::vec3(4, 0.2, 0)).length() > 0.9) {
+				std::shared_ptr<Material> sphere_material;
+
+				if (choose_mat < 0.8) {
+					// diffuse
+					auto albedo = Color::HSVtoRGB(randomf(0, 360), 1.0f, 1.0f);
+					sphere_material = std::make_shared<Lambertian>(albedo);
+					scene.AddObject(std::make_unique<Sphere>(Transform{ center }, 0.2f, sphere_material));
+				}
+				else if (choose_mat < 0.95) {
+					// metal
+					auto albedo = Color::HSVtoRGB(randomf(0, 360), 1.0f, 1.0f);
+					auto fuzz = randomf(0.0f, 0.5f);
+					sphere_material = std::make_shared<Metal>(albedo, fuzz);
+					scene.AddObject(std::make_unique<Sphere>(Transform{ center }, 0.2f, sphere_material));
+				}
+				else {
+					// glass
+					sphere_material = std::make_shared<Dielectric>(color3_t{ 1 }, 1.5f);
+					scene.AddObject(std::make_unique<Sphere>(Transform{ center }, 0.2f, sphere_material));
+				}
+			}
+		}
+	}
+
+	auto material1 = std::make_shared<Dielectric>(color3_t{ 1 }, 1.5f);
+	scene.AddObject(std::make_unique<Sphere>(Transform{ glm::vec3{ 0, 1, 0 } }, 1.0f, material1));
+
+	auto material2 = std::make_shared<Lambertian>(color3_t(0.4f, 0.2f, 0.1f));
+	scene.AddObject(std::make_unique<Sphere>(Transform{ glm::vec3{ -4, 1, 0 } }, 1.0f, material2));
+
+	auto material3 = std::make_shared<Metal>(color3_t(0.7f, 0.6f, 0.5f), 0.0f);
+	scene.AddObject(std::make_unique<Sphere>(Transform{ glm::vec3{ 4, 1, 0 } }, 1.0f, material3));
+
+	Color::SetBlendMode(BlendMode::NORMAL);
+}
+
 void InitCornellBox(Scene& scene)
 {
 	std::shared_ptr<Material> matWhiteWall = std::make_unique<Lambertian>(Color::HSVtoRGB(0.0f, 0.0f, 1.0f));
@@ -194,9 +248,91 @@ void InitCornellBox(Scene& scene)
 	scene.AddObject(std::move(light));
 #pragma endregion
 
-	std::unique_ptr<Model> teapot = std::make_unique<Model>(Transform{ { -2, 2, 1 }, { 0, 0, 0 }, glm::vec3{ 0.25f } }, std::make_shared<Metal>(Color::HSVtoRGB(285, 0.85f, 0.75f), 0.8f));
+	std::unique_ptr<Model> teapot = std::make_unique<Model>(Transform{ { -2.5f, -4.75f, 1 }, { 0, 20, 0 }, glm::vec3{ 0.5f } }, std::make_shared<Metal>(Color::HSVtoRGB(285, 0.85f, 0.75f), 0.8f));
 	teapot->Load("models/teapot.obj");
 	scene.AddObject(std::move(teapot));
+
+	std::unique_ptr<Model> cube = std::make_unique<Model>(Transform{ { 3, -4, 2 }, { 0, 0, 0 }, glm::vec3{ 3 } }, matWhiteWall);
+	cube->Load("models/cube.obj");
+	scene.AddObject(std::move(cube));
+
+	std::unique_ptr<Model> spot = std::make_unique<Model>(Transform{ { 2.75f, -1, 2 }, { 0, 45, 0 }, glm::vec3{ 2 } }, std::make_shared<Lambertian>(Color::HSVtoRGB(25.0f, 0.5f, 0.5f)));
+	spot->Load("models/spot.obj");
+	scene.AddObject(std::move(spot));
+
+	Color::SetBlendMode(BlendMode::NORMAL);
+}
+
+void InitFinalScene(Scene& scene)
+{
+	auto matGround = std::make_shared<Lambertian>(Color::HSVtoRGB(290, 0.2f, 0.85f));
+	auto ground = std::make_unique<Plane>(Transform{ { 0, -2, 0} }, matGround);
+	scene.AddObject(std::move(ground));
+
+	for (int x = -11; x < 11; x += 2)
+	{
+		for (int z = -3; z < 15; z += 2)
+		{
+			int objType = random(10);
+			float matType = randomf();
+			std::shared_ptr<Material> mat;
+			if (matType <= 0.4f)
+			{
+				mat = std::make_shared<Lambertian>(Color::HSVtoRGB(randomf(360), randomf(), randomf()));
+			}
+			else if (matType <= 0.7f)
+			{
+				mat = std::make_shared<Metal>(Color::HSVtoRGB(randomf(360), randomf(), randomf()), randomf());
+			}
+			else if (matType <= 0.9f)
+			{
+				mat = std::make_shared<Dielectric>(Color::HSVtoRGB(randomf(360), randomf(), randomf()), randomf(0.5f, 3.0f));
+			}
+			else
+			{
+				mat = std::make_shared<Emissive>(Color::HSVtoRGB(randomf(360), randomf(), randomf()), randomf(10, 20));
+			}
+			if (objType <= 6)
+			{
+				auto sphere = std::make_unique<Sphere>(Transform{ { x + (0.9f * randomf(-1, 1)), randomf(-2, 10), z + (0.9f * randomf(-1, 1))}}, randomf(0.5f, 1.5f), mat);
+				scene.AddObject(std::move(sphere));
+			}
+			else
+			{
+				int modelPick = random(5);
+				auto model = std::make_unique<Model>(Transform{ { x + (0.9f * randomf(-1, 1)), randomf(-2, 10), z + (0.9f * randomf(-1, 1)) }, { randomf(-180, 180), randomf(-180, 180), randomf(-180, 180) }, glm::vec3{ randomf(0.5f, 2.0f) } }, mat);
+				switch (modelPick)
+				{
+				case 0:
+					model->Load("models/cube.obj");
+					break;
+				case 1:
+					model->Load("models/spot.obj");
+					break;
+				case 2:
+					model->Load("models/suzanne.obj");
+					break;
+				case 3:
+					model->Load("models/teapot.obj");
+					break;
+				case 4:
+					model->Load("models/torus.obj");
+					break;
+				default:
+					model->Load("models/cube.obj");
+					break;
+				}
+				scene.AddObject(std::move(model));
+			}
+		}
+	}
+
+	auto pedestal = std::make_unique<Model>(Transform{ { -2.175f, -1.5f, -5 }, { 0, 45, 0 }, glm::vec3{ 1.25f } }, std::make_shared<Metal>(Color::HSVtoRGB(46, 0.74f, 0.83f), 0.4f));
+	pedestal->Load("models/cube.obj");
+	scene.AddObject(std::move(pedestal));
+	auto spot = std::make_unique<Model>(Transform{ { -2, -0.25f, -5 }, { 0, -55, 0 }, glm::vec3{ 1 } }, std::make_shared<Dielectric>(Color::HSVtoRGB(25.0f, 0.5f, 0.5f), 1.76f));
+	spot->Load("models/spot.obj");
+	scene.AddObject(std::move(spot));
 
 	Color::SetBlendMode(BlendMode::NORMAL);
 }

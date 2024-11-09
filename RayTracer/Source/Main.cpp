@@ -21,6 +21,7 @@ void InitScene(Scene& scene);
 void InitScene01(Scene& scene, Camera& camera);
 void InitCornellBox(Scene& scene);
 void InitFinalScene(Scene& scene);
+void InitECScene(Scene& scene, Camera& camera);
 
 int main(int argc, char* argv[])
 {
@@ -41,7 +42,8 @@ int main(int argc, char* argv[])
 	//InitScene(scene);
 	//InitScene01(scene, camera);
 	//InitCornellBox(scene);
-	InitFinalScene(scene);
+	//InitFinalScene(scene);
+	InitECScene(scene, camera);
 
 	scene.Update();
 	scene.Render(framebuffer, camera, 3, 5);
@@ -333,6 +335,35 @@ void InitFinalScene(Scene& scene)
 	auto spot = std::make_unique<Model>(Transform{ { -2, -0.25f, -5 }, { 0, -55, 0 }, glm::vec3{ 1 } }, std::make_shared<Dielectric>(Color::HSVtoRGB(25.0f, 0.5f, 0.5f), 1.76f));
 	spot->Load("models/spot.obj");
 	scene.AddObject(std::move(spot));
+
+	Color::SetBlendMode(BlendMode::NORMAL);
+}
+
+void InitECScene(Scene& scene, Camera& camera)
+{
+	camera.SetView({ -1, 2, -10 }, { 0, 0, 0 });
+
+	auto matTree = std::make_shared<Emissive>(Color::HSVtoRGB(3, 0.8f, 0.18f), 2);
+	for (float f = -1.5f; f < 5.0f; f += 0.5f)
+	{
+		auto ring = std::make_unique<Model>(Transform{ { -4.5f + randomf(-0.25f, 0.25f), f, 0.0f + randomf(-0.25f, 0.25f)}, { randomf(-10, 10), 0, randomf(-10, 10) }, glm::vec3{ randomf(0.5f, 1.0f) } }, matTree);
+		ring->Load("models/torus.obj");
+		scene.AddObject(std::move(ring));
+	}
+
+	auto matLeaves = std::make_shared<Dielectric>(Color::HSVtoRGB(320.3f, 1.0f, 0.859f), 1.25f);
+	for (int i = 0; i < 200; i++)
+	{
+		auto leaf = std::make_unique<Sphere>(Transform{ { randomf(-7.0f, -1.0f), randomf(2.5f, 5.5f), randomf(-3.0f, 3.0f) } }, randomf(0.25f, 0.5f), matLeaves);
+		scene.AddObject(std::move(leaf));
+	}
+
+	auto gate = std::make_unique<Model>(Transform{ { 3, 1.5f, 0 }, { 0, 35, 0 }, glm::vec3{ 2 } }, std::make_shared<Metal>(Color::HSVtoRGB(1, 0.95f, 0.65f), 5.0f));
+	gate->Load("models/gate.obj");
+	scene.AddObject(std::move(gate));
+
+	auto ground = std::make_unique<Plane>(Transform{ { 0, -2, 0 } }, std::make_shared<Lambertian>(Color::HSVtoRGB(118, 0.65f, 0.35f)));
+	scene.AddObject(std::move(ground));
 
 	Color::SetBlendMode(BlendMode::NORMAL);
 }

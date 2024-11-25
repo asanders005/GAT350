@@ -42,11 +42,11 @@ int main(int argc, char* argv[])
 	//InitScene(scene);
 	//InitScene01(scene, camera);
 	//InitCornellBox(scene);
-	//InitFinalScene(scene);
-	InitECScene(scene, camera);
+	InitFinalScene(scene);
+	//InitECScene(scene, camera);
 
 	scene.Update();
-	scene.Render(framebuffer, camera, 3, 5);
+	scene.Render(framebuffer, camera, 80, 6);
 
 	bool quit = false;
 	while (!quit)

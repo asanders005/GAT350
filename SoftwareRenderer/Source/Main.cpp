@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "Actor.h"
 #include "Random.h"
+#include "Shader.h"
 
 #include <iostream>
 #include <memory>
@@ -36,38 +37,24 @@ int main(int argc, char* argv[])
 	std::unique_ptr<Framebuffer> framebuffer = std::make_unique<Framebuffer>(*renderer.get(), renderer->GetWidth(), renderer->GetHeight());
 
 	Image scenery;
-	scenery.Load("Shrine.jpg");
+	scenery.Load("Images/Shrine.jpg");
 
 	Color::SetBlendMode(BlendMode::NORMAL);
 
+	//Shader
+	VertexShader::uniforms.view = camera->GetView();
+	VertexShader::uniforms.projection = camera->GetProjection();
+	VertexShader::uniforms.ambient = color3_t{ 0.75f, 0.4f, 1.0f };
+
 	//vertices_t vertices{ {-5, -5, 0}, {5, 5, 0}, {-5, 5, 0} };
 	std::shared_ptr<Model> fox = std::make_shared<Model>();
-	fox->Load("fox.obj");
-	fox->SetColor({ 255, 128, 0, 255 });
-	
-	std::shared_ptr<Model> gate = std::make_shared<Model>();
-	gate->Load("gate.obj");
-	gate->SetColor({ 255, 128, 0, 255 });
-	
-	std::shared_ptr<Model> tree = std::make_shared<Model>();
-	tree->Load("tree.obj");
-	tree->SetColor({ 255, 128, 0, 255 });
+	fox->Load("Models/fox.obj");
+	fox->SetColor({ 1, 0.5f, 0, 1 });
 
 	std::vector<std::unique_ptr<Actor>> actors;
 
-	Transform transform{ { 0, 0, 0 }, { 0, -75, 0 }, glm::vec3{5}};
+	Transform transform{ glm::vec3{ 0 }, {0, -75, 0}, glm::vec3{5}};
 	std::unique_ptr<Actor> actor = std::make_unique<Actor>(transform, fox);
-	actor->SetColor({ 255, 128, 0, 255 });
-	actors.push_back(std::move(actor));
-	
-	transform = { { -20, 7, 25 }, { 0, -45, 0 }, glm::vec3{5}};
-	actor = std::make_unique<Actor>(transform, gate);
-	actor->SetColor({ 255, 28, 28, 255 });
-	actors.push_back(std::move(actor));
-
-	transform = { { 25, -5, 40 }, {5, 75, 5}, glm::vec3{0.25f} };
-	actor = std::make_unique<Actor>(transform, tree);
-	actor->SetColor({ 255, 0, 255, 255 });
 	actors.push_back(std::move(actor));
 
 	bool quit = false;

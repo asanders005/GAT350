@@ -3,7 +3,7 @@
 
 struct fragment_input_t
 {
-	//
+	color4_t color;
 };
 
 class FragmentShader

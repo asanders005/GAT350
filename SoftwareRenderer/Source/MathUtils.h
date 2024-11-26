@@ -73,7 +73,7 @@ namespace Math
 
 	inline float Cross(const glm::vec2& v1, const glm::vec2& v2)
 	{
-		return (v1.x * v2.y) + (v1.y * v2.x);
+		return glm::cross(glm::vec3{ v1.x, v1.y, 0 }, glm::vec3{ v2.x, v2.y, 0 }).z;
 	}
 
 	inline glm::vec3 Cross(const glm::vec3& v1, const glm::vec3& v2)

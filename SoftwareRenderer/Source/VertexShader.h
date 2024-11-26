@@ -14,6 +14,7 @@ using vertexbuffer_t = std::vector<vertex_t>;
 struct vertex_output_t
 {
 	glm::vec4 position;
+	glm::vec3 normal;
 	color3_t color;
 };
 

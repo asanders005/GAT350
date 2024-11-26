@@ -23,12 +23,15 @@ void Shader::Draw(const vertexbuffer_t& vb)
 		vertex_output_t& v1 = overtices[i + 1];
 		vertex_output_t& v2 = overtices[i + 2];
 
+		// screen points
 		glm::vec2 s0, s1, s2;
 		if (!ToScreen(v0, s0)) continue;
 		if (!ToScreen(v1, s1)) continue;
 		if (!ToScreen(v2, s2)) continue;
 
 		// rasterization
+		Rasterizer::Triangle(*framebuffer, s0, s1, s2, v0, v1, v2);
+		//framebuffer->DrawTriangle(s0.x, s0.y, s1.x, s1.y, s2.x, s2.y, { 255, 0, 255, 255 });
 	}
 }
 

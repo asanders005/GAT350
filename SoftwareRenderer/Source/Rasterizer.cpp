@@ -28,20 +28,22 @@ namespace Rasterizer
 				// this gives us twice the signed area of the whole triangle using the cross product
 				float area = Math::Cross(p1 - p0, p2 - p0);
 				// the sign tells us triangle winding (clockwise/counterclockwise)
-				if (std::abs(area) < std::numeric_limits<float>::epsilon()) return;
+				if (area <= 0) return;
+				//if (std::abs(area) < std::numeric_limits<float>::epsilon()) return;
 
 				// area of subtriangles divided by total area
 				float w0 = Math::Cross(p1 - p, p2 - p) / area;	// area of subtriangle opposite to v0
 				float w1 = Math::Cross(p2 - p, p0 - p) / area;	// area of subtriangle opposite to v1
-				float w2 = 1.0f - w0 - w1;					// area of subtriangle opposite to v2
+				float w2 = 1.0f - w0 - w1;						// area of subtriangle opposite to v2
 
 				if (w0 >= 0 && w1 >= 0 && w2 >= 0) 
 				{
 					// interpolate vertex attributes
+					color3_t color = w0 * v0.color + w1 * v1.color + w2 * v2.color;
 					
 					// create fragment shader input
 					fragment_input_t fragment;
-					
+					fragment.color = color4_t{ color, 1 };
 					// call fragment shader
 					color4_t output_color = FragmentShader::Process(fragment);
 					framebuffer.DrawPoint(x, y, Color::ColorConvert(output_color));

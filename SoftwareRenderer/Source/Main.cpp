@@ -36,19 +36,18 @@ int main(int argc, char* argv[])
 
 	std::unique_ptr<Framebuffer> framebuffer = std::make_unique<Framebuffer>(*renderer.get(), renderer->GetWidth(), renderer->GetHeight());
 
-	Image scenery;
-	scenery.Load("Images/Shrine.jpg");
-
 	Color::SetBlendMode(BlendMode::NORMAL);
 
 	//Shader
 	VertexShader::uniforms.view = camera->GetView();
 	VertexShader::uniforms.projection = camera->GetProjection();
-	VertexShader::uniforms.ambient = color3_t{ 0.75f, 0.4f, 1.0f };
+	VertexShader::uniforms.ambient = color3_t{ 0.35f, 0.2f, 0.65f };
+
+	Shader::framebuffer = framebuffer.get();
 
 	//vertices_t vertices{ {-5, -5, 0}, {5, 5, 0}, {-5, 5, 0} };
 	std::shared_ptr<Model> fox = std::make_shared<Model>();
-	fox->Load("Models/fox.obj");
+	fox->Load("Models/cube.obj");
 	fox->SetColor({ 1, 0.5f, 0, 1 });
 
 	std::vector<std::unique_ptr<Actor>> actors;
@@ -84,9 +83,6 @@ int main(int argc, char* argv[])
 		SDL_GetMouseState(&mx, &my);
 
 		Color::SetBlendMode(BlendMode::NORMAL);
-		framebuffer->DrawImage(700, 450, scenery);
-		Post::ColorBalance(framebuffer->m_buffer, -20, -20, 10);
-		Post::Brightness(framebuffer->m_buffer, -80);
 		
 		if (input->GetMouseButtonDown(2))
 		{
@@ -114,11 +110,12 @@ int main(int argc, char* argv[])
 		}
 		
 		camera->SetView(cameraTransform.position, cameraTransform.position + cameraTransform.GetForward());
+		VertexShader::uniforms.view = camera->GetView();
 
 		//transform.rotation += time->GetDeltaTime() * 135;
 		for (auto& actor : actors)
 		{
-			actor->Draw(*framebuffer.get(), *camera.get());
+			actor->Draw();
 		}
 
 		framebuffer->Update();

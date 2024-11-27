@@ -41,18 +41,22 @@ int main(int argc, char* argv[])
 	//Shader
 	VertexShader::uniforms.view = camera->GetView();
 	VertexShader::uniforms.projection = camera->GetProjection();
-	VertexShader::uniforms.ambient = color3_t{ 0.35f, 0.2f, 0.65f };
+	VertexShader::uniforms.ambient = color3_t{ 0.15f, 0.02f, 0.35f };
+
+	VertexShader::uniforms.light.position = glm::vec3{ 10, 10, -10 };
+	VertexShader::uniforms.light.direction = glm::vec3{ 0, -1, 0 };
+	VertexShader::uniforms.light.color = color3_t{ 1 };
 
 	Shader::framebuffer = framebuffer.get();
 
 	//vertices_t vertices{ {-5, -5, 0}, {5, 5, 0}, {-5, 5, 0} };
 	std::shared_ptr<Model> fox = std::make_shared<Model>();
-	fox->Load("Models/cube.obj");
+	fox->Load("Models/sphere.obj");
 	fox->SetColor({ 1, 0.5f, 0, 1 });
 
 	std::vector<std::unique_ptr<Actor>> actors;
 
-	Transform transform{ glm::vec3{ 0 }, {0, -75, 0}, glm::vec3{5}};
+	Transform transform{ glm::vec3{ 0 }, {0, 0, 0}, glm::vec3{ 5 }};
 	std::unique_ptr<Actor> actor = std::make_unique<Actor>(transform, fox);
 	actors.push_back(std::move(actor));
 

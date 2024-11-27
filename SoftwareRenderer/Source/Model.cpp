@@ -77,7 +77,7 @@ bool Model::Load(const std::string& filename)
 				{
 					vertex_t vertex;
 					vertex.position = vertices[index[0] - 1];
-					vertex.normal = (index[1]) ? normals[index[1] - 1] : glm::vec3{ 1 };
+					vertex.normal = (index[2]) ? normals[index[2] - 1] : glm::vec3{ 1 };
 					//vertex.uv = uvs[index[1] - 1];
 
 					m_vb.push_back(vertex);

@@ -27,6 +27,8 @@ public:
 
 	void DrawImage(int x, int y, const class Image& image);
 
+	std::vector<float>& GetDepth() { return m_depth; }
+
 	friend class Renderer;
 
 private:
@@ -44,6 +46,8 @@ public:
 	int m_pitch{ 0 };
 
 private:
+	std::vector<float> m_depth;
+
 	// Region Codes
 	const int INSIDE = 0; // 0000
 	const int LEFT = 1; // 0001

@@ -18,14 +18,14 @@ void VertexShader::Process(const vertex_t& ivertex, vertex_output_t& overtex)
 	overtex.normal = glm::normalize(glm::mat3{ mv } * ivertex.normal);
 
 #pragma region PointLight
-	//glm::vec3 vPosition = mv * glm::vec4{ ivertex.position, 1 };
-	//glm::vec3 lightPos = uniforms.view * glm::vec4{ uniforms.light.position, 1 };
-	//glm::vec3 lightDir = glm::normalize(lightPos - vPosition);
+	glm::vec3 vPosition = mv * glm::vec4{ ivertex.position, 1 };
+	glm::vec3 lightPos = uniforms.view * glm::vec4{ uniforms.light.position, 1 };
+	glm::vec3 lightDir = glm::normalize(lightPos - vPosition);
 
 #pragma endregion
 #pragma region DirectionLight
-	glm::vec3 lightDir = uniforms.view * glm::vec4{ uniforms.light.direction, 0 };
-	lightDir = glm::normalize(glm::mat3{ -1 } * lightDir);
+	//glm::vec3 lightDir = uniforms.view * glm::vec4{ uniforms.light.direction, 0 };
+	//lightDir = glm::normalize(glm::mat3{ -1 } * lightDir);
 
 #pragma endregion
 

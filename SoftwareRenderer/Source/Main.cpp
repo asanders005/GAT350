@@ -51,12 +51,12 @@ int main(int argc, char* argv[])
 
 	//vertices_t vertices{ {-5, -5, 0}, {5, 5, 0}, {-5, 5, 0} };
 	std::shared_ptr<Model> fox = std::make_shared<Model>();
-	fox->Load("Models/sphere.obj");
+	fox->Load("Models/bunny.obj");
 	fox->SetColor({ 1, 0.5f, 0, 1 });
 
 	std::vector<std::unique_ptr<Actor>> actors;
 
-	Transform transform{ glm::vec3{ 0 }, {0, 0, 0}, glm::vec3{ 5 }};
+	Transform transform{ glm::vec3{ 0 }, {90, -90, 0}, glm::vec3{ 5 }};
 	std::unique_ptr<Actor> actor = std::make_unique<Actor>(transform, fox);
 	actors.push_back(std::move(actor));
 

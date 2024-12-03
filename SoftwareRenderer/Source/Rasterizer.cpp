@@ -28,7 +28,7 @@ namespace Rasterizer
 				// this gives us twice the signed area of the whole triangle using the cross product
 				float area = Math::Cross(p1 - p0, p2 - p0);
 				// the sign tells us triangle winding (clockwise/counterclockwise)
-				if (area <= 0) return;
+				//if (area <= 0) return;
 				//if (std::abs(area) < std::numeric_limits<float>::epsilon()) return;
 
 				// area of subtriangles divided by total area

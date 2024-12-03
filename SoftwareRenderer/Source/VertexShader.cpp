@@ -31,5 +31,16 @@ void VertexShader::Process(const vertex_t& ivertex, vertex_output_t& overtex)
 
 	float intensity = std::max(0.0f, glm::dot(lightDir, overtex.normal));
 	color3_t diffuse = uniforms.light.color * intensity;
-	overtex.color = uniforms.ambient + diffuse;
+
+	color3_t specular = color3_t{ 0 };
+	if (intensity > 0)
+	{
+		glm::vec3 reflection = glm::reflect(-lightDir, overtex.normal);
+		glm::vec3 viewDir = glm::normalize(-vPosition);
+		intensity = std::max(glm::dot(reflection, viewDir), 0.0f);
+		intensity = std::pow(intensity, uniforms.material.shininess);
+		specular = uniforms.material.specular * intensity;
+	}
+
+	overtex.color = ((uniforms.ambient + diffuse) * uniforms.material.albedo) + specular;
 }

@@ -43,22 +43,37 @@ int main(int argc, char* argv[])
 	VertexShader::uniforms.projection = camera->GetProjection();
 	VertexShader::uniforms.ambient = color3_t{ 0.15f, 0.02f, 0.35f };
 
-	VertexShader::uniforms.light.position = glm::vec3{ 10, 10, -10 };
+	VertexShader::uniforms.light.position = glm::vec3{ 0, 10, -10 };
 	VertexShader::uniforms.light.direction = glm::vec3{ 0, -1, 0 };
 	VertexShader::uniforms.light.color = color3_t{ 1 };
 
 	Shader::framebuffer = framebuffer.get();
 
 	//vertices_t vertices{ {-5, -5, 0}, {5, 5, 0}, {-5, 5, 0} };
-	std::shared_ptr<Model> fox = std::make_shared<Model>();
-	fox->Load("Models/bunny.obj");
-	fox->SetColor({ 1, 0.5f, 0, 1 });
+	std::shared_ptr<Model> model = std::make_shared<Model>();
+	model->Load("Models/bunny.obj");
+	std::shared_ptr<Model> model2 = std::make_shared<Model>();
+	model2->Load("Models/dragon.obj");
+
+	std::shared_ptr<material_t> material = std::make_shared<material_t>();
+	material->albedo = color3_t{ 0.5f, 0.25f, 0.75f };
+	material->specular = color3_t{ 1 };
+	material->shininess = 8.0f;
+
+	std::shared_ptr<material_t> material2 = std::make_shared<material_t>();
+	material2->albedo = Color::HSVtoRGB({ 132, 1.0f, 0.66f });
+	material2->specular = color3_t{ 0.0f, 0.9f, 0.6f };
+	material2->shininess = 32.0f;
 
 	std::vector<std::unique_ptr<Actor>> actors;
 
-	Transform transform{ glm::vec3{ 0 }, {90, -90, 0}, glm::vec3{ 5 }};
-	std::unique_ptr<Actor> actor = std::make_unique<Actor>(transform, fox);
+	Transform transform{ glm::vec3{ -10, -5, 0 }, glm::vec3{ 90, -135, 0 }, glm::vec3{ 5 } };
+	std::unique_ptr<Actor> actor = std::make_unique<Actor>(transform, model, material);
 	actors.push_back(std::move(actor));
+	
+	transform = Transform{ glm::vec3{ 10, -2.5f, 0 }, glm::vec3{ 0, -25, 0 }, glm::vec3{ 1.5f } };
+	std::unique_ptr<Actor> actor2 = std::make_unique<Actor>(transform, model2, material2);
+	actors.push_back(std::move(actor2));
 
 	bool quit = false;
 	while (!quit)

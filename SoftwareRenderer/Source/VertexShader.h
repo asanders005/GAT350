@@ -1,4 +1,5 @@
 #pragma once
+#include "Material.h"
 #include "Light.h"
 #include "Color.h"
 #include <array>
@@ -31,6 +32,8 @@ public:
 		glm::mat4 model;
 		glm::mat4 view;
 		glm::mat4 projection;
+
+		material_t material;
 
 		//Lights
 		light_t light;

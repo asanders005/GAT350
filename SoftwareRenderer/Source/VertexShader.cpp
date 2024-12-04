@@ -1,25 +1,23 @@
 #include "VertexShader.h"
+#include "Shader.h"
 
-VertexShader::uniforms_t VertexShader::uniforms =
-{
-	glm::mat4{ 1 }, //Model
-	glm::mat4{ 1 }, //View
-	glm::mat4{ 1 }, //Projection
-	color3_t{ 1 }
-};
+// #define GOURAUD
 
 void VertexShader::Process(const vertex_t& ivertex, vertex_output_t& overtex)
 {
-	glm::mat4 mvp = uniforms.projection * uniforms.view * uniforms.model;
+	glm::mat4 mvp = Shader::uniforms.projection * Shader::uniforms.view * Shader::uniforms.model;
 
 	overtex.position = mvp * glm::vec4{ ivertex.position, 1 };
 
-	glm::mat4 mv = uniforms.view * uniforms.model;
+	glm::mat4 mv = Shader::uniforms.view * Shader::uniforms.model;
 	overtex.normal = glm::normalize(glm::mat3{ mv } * ivertex.normal);
 
+	overtex.vPosition = mv * glm::vec4{ ivertex.position, 1 };
+
+#ifdef GOURAUD
 #pragma region PointLight
 	glm::vec3 vPosition = mv * glm::vec4{ ivertex.position, 1 };
-	glm::vec3 lightPos = uniforms.view * glm::vec4{ uniforms.light.position, 1 };
+	glm::vec3 lightPos = Shader::uniforms.view * glm::vec4{ Shader::uniforms.light.position, 1 };
 	glm::vec3 lightDir = glm::normalize(lightPos - vPosition);
 
 #pragma endregion
@@ -30,7 +28,7 @@ void VertexShader::Process(const vertex_t& ivertex, vertex_output_t& overtex)
 #pragma endregion
 
 	float intensity = std::max(0.0f, glm::dot(lightDir, overtex.normal));
-	color3_t diffuse = uniforms.light.color * intensity;
+	color3_t diffuse = Shader::uniforms.light.color * intensity;
 
 	color3_t specular = color3_t{ 0 };
 	if (intensity > 0)
@@ -38,9 +36,10 @@ void VertexShader::Process(const vertex_t& ivertex, vertex_output_t& overtex)
 		glm::vec3 reflection = glm::reflect(-lightDir, overtex.normal);
 		glm::vec3 viewDir = glm::normalize(-vPosition);
 		intensity = std::max(glm::dot(reflection, viewDir), 0.0f);
-		intensity = std::pow(intensity, uniforms.material.shininess);
-		specular = uniforms.material.specular * intensity;
+		intensity = std::pow(intensity, Shader::uniforms.material.shininess);
+		specular = Shader::uniforms.material.specular * intensity;
 	}
 
-	overtex.color = ((uniforms.ambient + diffuse) * uniforms.material.albedo) + specular;
+	overtex.color = ((Shader::uniforms.ambient + diffuse) * Shader::uniforms.material.albedo) + specular;
+#endif // GOURAUD
 }

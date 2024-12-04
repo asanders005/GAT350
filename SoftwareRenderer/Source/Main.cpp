@@ -39,13 +39,13 @@ int main(int argc, char* argv[])
 	Color::SetBlendMode(BlendMode::NORMAL);
 
 	//Shader
-	VertexShader::uniforms.view = camera->GetView();
-	VertexShader::uniforms.projection = camera->GetProjection();
-	VertexShader::uniforms.ambient = color3_t{ 0.15f, 0.02f, 0.35f };
+	Shader::uniforms.view = camera->GetView();
+	Shader::uniforms.projection = camera->GetProjection();
+	Shader::uniforms.ambient = color3_t{ 0.15f, 0.02f, 0.35f };
 
-	VertexShader::uniforms.light.position = glm::vec3{ 0, 10, -10 };
-	VertexShader::uniforms.light.direction = glm::vec3{ 0, -1, 0 };
-	VertexShader::uniforms.light.color = color3_t{ 1 };
+	Shader::uniforms.light.position = glm::vec3{ 0, 10, -10 };
+	Shader::uniforms.light.direction = glm::vec3{ 0, -1, 0 };
+	Shader::uniforms.light.color = color3_t{ 1 };
 
 	Shader::framebuffer = framebuffer.get();
 
@@ -62,8 +62,8 @@ int main(int argc, char* argv[])
 
 	std::shared_ptr<material_t> material2 = std::make_shared<material_t>();
 	material2->albedo = Color::HSVtoRGB({ 132, 1.0f, 0.66f });
-	material2->specular = color3_t{ 0.0f, 0.9f, 0.6f };
-	material2->shininess = 32.0f;
+	material2->specular = color3_t{ /*0.0f, 0.9f, 0.6f*/ 1 };
+	material2->shininess = 128.0f;
 
 	std::vector<std::unique_ptr<Actor>> actors;
 
@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
 		}
 		
 		camera->SetView(cameraTransform.position, cameraTransform.position + cameraTransform.GetForward());
-		VertexShader::uniforms.view = camera->GetView();
+		Shader::uniforms.view = camera->GetView();
 
 		//transform.rotation += time->GetDeltaTime() * 135;
 		for (auto& actor : actors)

@@ -11,7 +11,7 @@ A high-performance **Software Renderer** built from scratch to support real-time
   - **Phong Shading**: Accurate per-pixel lighting for enhanced realism.
 - **Post-Processing Effects**: Apply screen-space effects like blur, grayscale, or bloom to enhance visual output.
 
-<img width="600" alt="image" src="https://github.com/user-attachments/assets/69292c26-160f-4e26-b922-3bc1e151a227">
+<img width="600" alt="Phong Lighting" src="https://github.com/user-attachments/assets/69292c26-160f-4e26-b922-3bc1e151a227">
 
 ### 2. **Ray-Tracing Renderer**
 - Implements a **path-tracing algorithm** for highly realistic lighting and shadows.
@@ -20,8 +20,7 @@ A high-performance **Software Renderer** built from scratch to support real-time
   - Global illumination.
   - Soft shadows and anti-aliasing.
 
-<img width="600" alt="Cornell Box" src="https://github.com/user-attachments/assets/b7a2d78e-23c7-4347-9029-372a995da2cd">
-
+<img width="600" alt="Cornell Box" src="https://github.com/user-attachments/assets/5b10cdca-9a0d-4c1a-bb5c-64531bbaccbd">
   
 ### 3. **Flexible Rendering Pipeline**
 - Configurable pipeline stages for detailed customization.

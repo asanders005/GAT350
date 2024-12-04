@@ -20,17 +20,14 @@ A high-performance **Software Renderer** built from scratch to support real-time
   - Global illumination.
   - Soft shadows and anti-aliasing.
 
-<img width="600" alt="Cornell Box" src="https://github.com/user-attachments/assets/5b10cdca-9a0d-4c1a-bb5c-64531bbaccbd">
+<img width="600" alt="CornellBox" src="https://github.com/user-attachments/assets/8b004bb6-79e9-482d-a9f2-0c48097b4aa0">
   
 ### 3. **Flexible Rendering Pipeline**
 - Configurable pipeline stages for detailed customization.
 - Debugging tools to inspect vertex transformation and fragment generation.
 
-## Getting Started
-
 ### Prerequisites
 - A C++11 (or higher) compiler.
-- Supported platforms: Windows, macOS, and Linux.
-- Libraries (optional for certain features): 
+- Supported platforms: Windows.
+- Libraries: 
   - **SDL2** (for windowing and input handling).
-  - **ImGui** (for debugging UI, optional).
